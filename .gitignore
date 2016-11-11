@@ -9,3 +9,6 @@ commentsRouter_controllers.go
 commentsRouter_controllers_web.go
 commentsRouter_controllers_web_v1.go
 logs
+static
+wx_server_go_windows_amd64.exe
+commentsRouter_controllers_web_v1_cus.go

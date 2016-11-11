@@ -62,12 +62,12 @@ func ReadWxSubscribeList(query map[string]string, page int64, limit int64) (tota
 	}
 	qs = qs.SetCond(cond)
 	qs = qs.OrderBy("-createDate")
-
 	if total, err = qs.Count(); err == nil {
 		offset := (page - 1) * limit
 		if _, err := qs.Limit(limit, offset).All(&res); err == nil {
 			return total, res, nil
 		}
 	}
+
 	return 0, nil, err
 }

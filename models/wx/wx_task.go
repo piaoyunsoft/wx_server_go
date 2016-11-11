@@ -72,7 +72,7 @@ func ReadDtl_WxTask(query map[string]string, page int, limit int) (total int64, 
 		OrderBy("a.createDtm").
 		Desc()
 
-	if total, err = sqltool.PageQuery(qb, &tasks, page, limit); err == nil {
+	if total, err = sqltool.PageQuery_QB(qb, &tasks, page, limit); err == nil {
 		return total, tasks, nil
 	} else {
 		return 0, nil, err

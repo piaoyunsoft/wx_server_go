@@ -8,6 +8,7 @@
 package routers
 
 import (
+	"wx_server_go/controllers/web/v1/cus"
 	"wx_server_go/controllers/web/v1/wx"
 
 	"github.com/astaxie/beego"
@@ -23,6 +24,11 @@ func init() {
 		beego.NSNamespace("/wxtask",
 			beego.NSInclude(
 				&wx.WxTaskController{},
+			),
+		),
+		beego.NSNamespace("/cusmbr",
+			beego.NSInclude(
+				&cus.CusMbrController{},
 			),
 		),
 	)
