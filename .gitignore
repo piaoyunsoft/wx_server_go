@@ -12,3 +12,4 @@ logs
 static
 wx_server_go_windows_amd64.exe
 commentsRouter_controllers_web_v1_cus.go
+routers/commentsRouter_controllers_web_v1_wx.go
