@@ -19,7 +19,7 @@ func main() {
 		beego.BConfig.WebConfig.DirectoryIndex = true
 		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
 	}
-	//	beego.BConfig.WebConfig.StaticDir["/static"] = "static"
+	beego.BConfig.WebConfig.StaticDir["/static"] = "static"
 	beego.SetStaticPath("/", "static")
 	beego.InsertFilter("*", beego.BeforeRouter, cors.Allow(&cors.Options{
 		AllowOrigins:     []string{beego.AppConfig.String("accessdomain")},
