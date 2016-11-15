@@ -9,6 +9,7 @@ package routers
 
 import (
 	"wx_server_go/controllers/web/v1/cus"
+	"wx_server_go/controllers/web/v1/user"
 	"wx_server_go/controllers/web/v1/wx"
 
 	"github.com/astaxie/beego"
@@ -16,6 +17,11 @@ import (
 
 func init() {
 	ns := beego.NewNamespace("/web/v1",
+		beego.NSNamespace("/user",
+			beego.NSInclude(
+				&user.UserController{},
+			),
+		),
 		beego.NSNamespace("/subscribe",
 			beego.NSInclude(
 				&wx.WxSubscribeController{},
