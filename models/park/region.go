@@ -2,6 +2,7 @@ package park
 
 import (
 	"OPMS/models"
+	"fmt"
 	"strings"
 	"wx_server_go/utils/sqltool"
 
@@ -34,24 +35,37 @@ func GetRegionCasData() (res []CascaderData, err error) {
 	var size int = 1000
 
 	if _, rs, err := GetRegionList(query, page, size); err == nil {
-		var data []CascaderData
-		count := 0
-		for _, item := range rs {
-			if item.PARENT_ID == "" {
-				count++
-			}
-		}
-		data = make([]CascaderData, count)
-		for k, item := range rs {
-			if item.PARENT_ID == "" {
-				temp := CascaderData{Value: item.ID, Label: item.REGION_NAME}
-				data[k] = temp
-			}
-		}
+		data := Test(rs, "")
 		return data, nil
 	} else {
 		return nil, err
 	}
+}
+
+func Test(res []Region, regionID string) []CascaderData {
+	count := 0
+	for _, item := range res {
+		if item.PARENT_ID == regionID {
+			count++
+		}
+	}
+	if count == 0 {
+		return nil
+	}
+	fmt.Println(count)
+	key := 0
+	data := make([]CascaderData, count)
+	for _, item := range res {
+		if item.PARENT_ID == regionID {
+			temp := new(CascaderData)
+			temp.Value = item.ID
+			temp.Label = item.REGION_NAME
+			temp.Children = Test(res, item.ID)
+			data[key] = *temp
+			key++
+		}
+	}
+	return data
 }
 
 func GetRegionList(query map[string]string, page int, limit int) (total int64, res []Region, err error) {
