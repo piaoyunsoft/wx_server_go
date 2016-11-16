@@ -9,6 +9,7 @@ package routers
 
 import (
 	"wx_server_go/controllers/web/v1/cus"
+	"wx_server_go/controllers/web/v1/park"
 	"wx_server_go/controllers/web/v1/user"
 	"wx_server_go/controllers/web/v1/wx"
 
@@ -35,6 +36,16 @@ func init() {
 		beego.NSNamespace("/cusmbr",
 			beego.NSInclude(
 				&cus.CusMbrController{},
+			),
+		),
+		beego.NSNamespace("/park",
+			beego.NSInclude(
+				&park.ParkController{},
+			),
+		),
+		beego.NSNamespace("/region",
+			beego.NSInclude(
+				&park.RegionController{},
 			),
 		),
 	)

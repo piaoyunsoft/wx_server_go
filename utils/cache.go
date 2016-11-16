@@ -43,10 +43,12 @@ func initRedis() {
 		}
 	}()
 
-	cc, err = cache.NewCache("redis", `{"conn":"`+beego.AppConfig.String("redis_host")+`"}`)
+	cc, err = cache.NewCache("redis", `{"conn":"`+beego.AppConfig.String("redis_host")+`","password":"helloworld"}`)
 
 	if err != nil {
 		beego.Info(err)
+	} else {
+		beego.Info("redis 连接成功")
 	}
 }
 
