@@ -48,6 +48,11 @@ func init() {
 				&park.RegionController{},
 			),
 		),
+		beego.NSNamespace("/device",
+			beego.NSInclude(
+				&park.DeviceController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }

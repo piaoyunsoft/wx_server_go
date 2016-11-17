@@ -1,8 +1,6 @@
 package v1
 
 import (
-	"pt_server/utils"
-	"strings"
 	"wx_server_go/constants"
 
 	"github.com/astaxie/beego"
@@ -26,21 +24,21 @@ type PageData struct {
 }
 
 func (this *BaseController) Prepare() {
-	runmode := beego.AppConfig.DefaultString("runmode", "pro")
-	if runmode == "pro" && !strings.Contains(this.Ctx.Request.RequestURI, "/web/v1/user/login") {
-		token := this.Ctx.Request.Header.Get("token")
-		if token == "" {
-			this.Data["json"] = ResCode(constants.InvalidToken)
-			this.ServeJSON()
-		}
-		valid, id := utils.ParseToken(token)
-		if !valid {
-			this.Data["json"] = ResCode(constants.InvalidToken)
-			this.ServeJSON()
-		} else {
-			userid = id
-		}
-	}
+	//	runmode := beego.AppConfig.DefaultString("runmode", "pro")
+	//	if runmode == "pro" && !strings.Contains(this.Ctx.Request.RequestURI, "/web/v1/user/login") {
+	//		token := this.Ctx.Request.Header.Get("token")
+	//		if token == "" {
+	//			this.Data["json"] = ResCode(constants.InvalidToken)
+	//			this.ServeJSON()
+	//		}
+	//		valid, id := utils.ParseToken(token)
+	//		if !valid {
+	//			this.Data["json"] = ResCode(constants.InvalidToken)
+	//			this.ServeJSON()
+	//		} else {
+	//			userid = id
+	//		}
+	//	}
 }
 
 func ResBase(errCode constants.ErrCode, data interface{}, msg string) Response {

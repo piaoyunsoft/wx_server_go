@@ -1,9 +1,8 @@
 package park
 
 import (
-	"OPMS/models"
-	"fmt"
 	"strings"
+	"wx_server_go/models"
 	"wx_server_go/utils/sqltool"
 
 	"github.com/astaxie/beego/orm"
@@ -35,14 +34,14 @@ func GetRegionCasData() (res []CascaderData, err error) {
 	var size int = 1000
 
 	if _, rs, err := GetRegionList(query, page, size); err == nil {
-		data := Test(rs, "")
+		data := RecuRegion(rs, "0")
 		return data, nil
 	} else {
 		return nil, err
 	}
 }
 
-func Test(res []Region, regionID string) []CascaderData {
+func RecuRegion(res []Region, regionID string) []CascaderData {
 	count := 0
 	for _, item := range res {
 		if item.PARENT_ID == regionID {
@@ -52,7 +51,6 @@ func Test(res []Region, regionID string) []CascaderData {
 	if count == 0 {
 		return nil
 	}
-	fmt.Println(count)
 	key := 0
 	data := make([]CascaderData, count)
 	for _, item := range res {
@@ -60,7 +58,7 @@ func Test(res []Region, regionID string) []CascaderData {
 			temp := new(CascaderData)
 			temp.Value = item.ID
 			temp.Label = item.REGION_NAME
-			temp.Children = Test(res, item.ID)
+			temp.Children = RecuRegion(res, item.ID)
 			data[key] = *temp
 			key++
 		}

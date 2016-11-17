@@ -11,12 +11,19 @@ import (
 type ParkView struct {
 	PARK_ID   string  `orm:"column(PARK_ID);pk"`
 	PARK_NAME string  `orm:"column(PARK_NAME)"`
+	RcdType   string  `orm:"column(RcdType)"`
 	LONGITUDE float32 `orm:"column(LONGITUDE)"`
 	LATITUDE  float32 `orm:"column(LATITUDE)"`
+	REGION_ID string  `orm:"column(REGION_ID)"`
+	PARK_TYPE string  `orm:"column(PARK_TYPE)"`
+	BERTH_MAX string  `orm:"column(BERTH_MAX)"`
+	BERTH_RES string  `orm:"column(BERTH_RES)"`
+	ORDER_NUM string  `orm:"column(ORDER_NUM)"`
+	ADDRESS   string  `orm:"column(ADDRESS)"`
 }
 
 func (this *ParkView) TableName() string {
-	return models.TableName("v_park")
+	return models.TableName("v_park_gis")
 }
 
 func init() {
@@ -31,9 +38,9 @@ func GetParkViewList(query map[string]string, page int, limit int) (total int64,
 	// query k=v
 	for k, v := range query {
 		k = strings.Replace(k, ".", "__", -1)
-		qs = qs.Filter(k, v)
-		if k == "keyword" {
-			cond = cond.AndCond(cond.And("mbrName__icontains", v).Or("mobile__icontains", v))
+		//		qs = qs.Filter(k, v)
+		if k == "REGION_ID" {
+			cond = cond.And(k+"__icontains", v)
 		}
 	}
 	qs = qs.SetCond(cond)
