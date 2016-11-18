@@ -8,13 +8,15 @@ import (
 )
 
 type DeviceView struct {
-	Id         int64   `orm:"column(id)" json:"-"`
+	Id         int64   `orm:"column(id);pk" json:"-"`
 	Park_ID    string  `orm:"column(Park_ID)" json:"parkID"`
 	PARK_NAME  string  `orm:"column(PARK_NAME)" json:"parkName"`
 	DevTypeDes string  `orm:"column(devTypeDes)" json:"devTypeDes"`
 	REGION_ID  string  `orm:"column(REGION_ID)" json:"regionID"`
 	LONGITUDE  float32 `orm:"column(LONGITUDE)" json:"lng"`
 	LATITUDE   float32 `orm:"column(LATITUDE)" json:"lat"`
+	HDModel    string  `orm:"column(HDModel)" json:"model"`
+	Status     string  `orm:"column(status)" json:"status"`
 }
 
 func (this *DeviceView) TableName() string {
@@ -34,8 +36,8 @@ func GetDeviceViewList(query map[string]string) (res []DeviceView, err error) {
 	for k, v := range query {
 		k = strings.Replace(k, ".", "__", -1)
 		//		qs = qs.Filter(k, v)
-		if k == "REGION_ID" {
-			cond = cond.And(k+"__icontains", v)
+		if k == "regionID" {
+			cond = cond.And("REGION_ID__icontains", v)
 		}
 	}
 	qs = qs.SetCond(cond)

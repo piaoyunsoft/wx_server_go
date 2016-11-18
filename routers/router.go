@@ -53,6 +53,11 @@ func init() {
 				&park.DeviceController{},
 			),
 		),
+		beego.NSNamespace("/traffic",
+			beego.NSInclude(
+				&park.TrafficController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
