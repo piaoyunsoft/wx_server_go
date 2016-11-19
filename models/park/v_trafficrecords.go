@@ -11,8 +11,8 @@ import (
 type TrafficView struct {
 	Id          int64     `orm:"column(id);pk" json:"id"`
 	PARK_NAME   string    `orm:"column(PARK_NAME)" json:"parkName"`
-	LONGITUDE   float32   `orm:"column(LONGITUDE)" json:"lng"`
-	LATITUDE    float32   `orm:"column(LATITUDE)" json:"lat"`
+	LONGITUDE   float64   `orm:"column(LONGITUDE)" json:"lng"`
+	LATITUDE    float64   `orm:"column(LATITUDE)" json:"lat"`
 	CarNum      string    `orm:"column(carNum)" json:"carNum"`
 	CAR_OWNER   string    `orm:"column(CAR_OWNER)" json:"userName"`
 	OWNER_PHONE string    `orm:"column(OWNER_PHONE)" json:"phone"`
