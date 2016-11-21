@@ -34,14 +34,14 @@ func GetRegionCasData() (res []CascaderData, err error) {
 	var size int = 1000
 
 	if _, rs, err := GetRegionList(query, page, size); err == nil {
-		data := RecuRegion(rs, "0")
+		data := recuRegion(rs, "0")
 		return data, nil
 	} else {
 		return nil, err
 	}
 }
 
-func RecuRegion(res []Region, regionID string) []CascaderData {
+func recuRegion(res []Region, regionID string) []CascaderData {
 	count := 0
 	for _, item := range res {
 		if item.PARENT_ID == regionID {
@@ -58,7 +58,7 @@ func RecuRegion(res []Region, regionID string) []CascaderData {
 			temp := new(CascaderData)
 			temp.Value = item.ID
 			temp.Label = item.REGION_NAME
-			temp.Children = RecuRegion(res, item.ID)
+			temp.Children = recuRegion(res, item.ID)
 			data[key] = *temp
 			key++
 		}

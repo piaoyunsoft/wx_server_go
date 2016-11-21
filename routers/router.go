@@ -8,6 +8,7 @@
 package routers
 
 import (
+	"wx_server_go/controllers/web/v1/charge"
 	"wx_server_go/controllers/web/v1/cus"
 	"wx_server_go/controllers/web/v1/park"
 	"wx_server_go/controllers/web/v1/user"
@@ -56,6 +57,11 @@ func init() {
 		beego.NSNamespace("/traffic",
 			beego.NSInclude(
 				&park.TrafficController{},
+			),
+		),
+		beego.NSNamespace("/charge",
+			beego.NSInclude(
+				&charge.ChargeController{},
 			),
 		),
 	)

@@ -8,8 +8,7 @@
 发布Linux  gox -osarch="linux/amd64"
 发布Windows  gox -osarch="windows/amd64"
 
-API接口文档：https://www.zybuluo.com/ldd/note/554970
-数据库设计文档：https://www.zybuluo.com/ldd/note/552912
+设计文档：https://www.zybuluo.com/ldd/note/574405
 
 
 API：golang
