@@ -30,16 +30,17 @@ type Platcuswxtask struct {
 }
 
 type WxTaskApi struct {
-	Id       int64  `orm:"column(id)" json:"id"`
-	NickName string `orm:"column(wxNickName);" json:"nickName"`
-	MsgBody  string `orm:"column(msgBody)" json:"msgBody"`
-	MbrName  string `orm:"column(ToCusMbrName)" json:"mbrName"`
-	Status   string `orm:"column(status)" json:"status"`
-	Remark   string `orm:"column(remark)" json:"remark"`
-	SendDtm  string `orm:"column(sendDtm)" json:"sendDtm"`
-	Type     string `orm:"column(type)" json:"type"`
-	TplName  string `orm:"column(title)" json:"tplName"`
-	CusName  string `orm:"column(cusName)" json:"cusName"`
+	Id        int64  `orm:"column(id)" json:"id"`
+	NickName  string `orm:"column(wxNickName);" json:"nickName"`
+	MsgBody   string `orm:"column(msgBody)" json:"msgBody"`
+	MbrName   string `orm:"column(ToCusMbrName)" json:"mbrName"`
+	Status    string `orm:"column(status)" json:"status"`
+	Remark    string `orm:"column(remark)" json:"remark"`
+	SendDtm   string `orm:"column(sendDtm)" json:"sendDtm"`
+	CreateDtm string `orm:"column(createDtm)" json:"createDtm"`
+	Type      string `orm:"column(type)" json:"type"`
+	TplName   string `orm:"column(title)" json:"tplName"`
+	CusName   string `orm:"column(cusName)" json:"cusName"`
 }
 
 func init() {

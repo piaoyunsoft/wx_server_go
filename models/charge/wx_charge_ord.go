@@ -24,6 +24,7 @@ type WxChargeOrd struct {
 	CreateDate  time.Time `orm:"column(createDate)" json:"createDate"`
 	ChangeDate  time.Time `orm:"column(changeDate)" json:"changeDate"`
 	MbrName     string    `orm:"column(mbrName)" json:"mbrName"`
+	Mobile      string    `orm:"column(mobile)" json:"mobile"`
 }
 
 func (this *WxChargeOrd) TableName() string {
@@ -40,18 +41,16 @@ func GetPageChargeOrds(query map[string]string, page int, limit int) (total int6
 	_w := "1=1"
 	for k, v := range query {
 		k = strings.Replace(k, ".", "__", -1)
-		if k == "nickName" {
-			_w += " and (b.wxNickName like '%" + v + "%' or a.ToCusMbrName like '%" + v + "%' )"
+		if k == "keyword" {
+			_w += " and (b.mbrName like '%" + v + "%' or b.mobile like '%" + v + "%' )"
 		} else if k == "begin" {
-			_w += " and sendDtm >= '" + v + "' "
+			_w += " and payTime >= '" + v + "' "
 		} else if k == "end" {
-			_w += " and sendDtm <= '" + v + "' "
-		} else if k == "status" {
-			_w += " and a.status = '" + v + "' "
+			_w += " and payTime <= '" + v + "' "
 		}
 	}
 
-	qb.Select("a.*", "b.mbrName").From("wxchargeodr as a").
+	qb.Select("a.*", "b.mbrName", "b.mobile").From("wxchargeodr as a").
 		LeftJoin("platcusmbr as b").On("(b.mbrId = a.mbrId and a.comId = b.cusId)").
 		Where(_w).
 		OrderBy("a.odrID").

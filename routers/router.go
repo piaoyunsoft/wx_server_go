@@ -64,6 +64,11 @@ func init() {
 				&charge.ChargeController{},
 			),
 		),
+		beego.NSNamespace("/vip",
+			beego.NSInclude(
+				&cus.VipController{},
+			),
+		),
 	)
 	beego.AddNamespace(ns)
 }
