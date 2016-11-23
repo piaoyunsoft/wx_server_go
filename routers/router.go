@@ -8,6 +8,7 @@
 package routers
 
 import (
+	"wx_server_go/controllers/common"
 	"wx_server_go/controllers/web/v1/charge"
 	"wx_server_go/controllers/web/v1/cus"
 	"wx_server_go/controllers/web/v1/park"
@@ -70,5 +71,13 @@ func init() {
 			),
 		),
 	)
+	nsCom := beego.NewNamespace("/com",
+		beego.NSNamespace("/file",
+			beego.NSInclude(
+				&common.FileController{},
+			),
+		),
+	)
 	beego.AddNamespace(ns)
+	beego.AddNamespace(nsCom)
 }

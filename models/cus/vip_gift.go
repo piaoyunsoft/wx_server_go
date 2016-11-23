@@ -1,12 +1,14 @@
 package cus
 
 import (
+	"fmt"
 	"strings"
 	"time"
 	"wx_server_go/models"
 	"wx_server_go/utils/sqltool"
 
 	"github.com/astaxie/beego/orm"
+	"github.com/zheng-ji/goSnowFlake"
 )
 
 type VipGift struct {
@@ -17,7 +19,7 @@ type VipGift struct {
 	GiftName    string    `orm:"column(giftName)" json:"giftName"`
 	GetWay      string    `orm:"column(getWay)" json:"getWay"`
 	GetBrief    string    `orm:"column(getBrief)" json:"getBrief"`
-	VldDays     string    `orm:"column(vldDays)" json:"vldDays"`
+	VldDays     time.Time `orm:"column(vldDays)" json:"vldDays"`
 	GiftPic     string    `orm:"column(giftPic)" json:"giftPic"`
 	ScoreNeed   int       `orm:"column(scoreNeed)" json:"scoreNeed"`
 	StkQty      float32   `orm:"column(stkQty)" json:"stkQty"`
@@ -65,5 +67,22 @@ func GetPageVipGift(query map[string]string, page int, limit int) (total int64, 
 		return total, res, nil
 	} else {
 		return 0, nil, err
+	}
+}
+
+func CreateVipGift(m *VipGift) error {
+	o := orm.NewOrm()
+	iw, err := goSnowFlake.NewIdWorker(1)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	if id, err := iw.NextId(); err != nil {
+		fmt.Println(id)
+		return err
+	} else {
+		m.GiftCode = fmt.Sprintf("%d", id)
+		_, err = o.Insert(m)
+		return err
 	}
 }

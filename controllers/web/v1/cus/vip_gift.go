@@ -1,6 +1,7 @@
 package cus
 
 import (
+	"encoding/json"
 	"wx_server_go/constants"
 	. "wx_server_go/controllers/web/v1"
 	. "wx_server_go/models/cus"
@@ -42,6 +43,20 @@ func (this *VipController) GetVipGift() {
 		this.Data["json"] = ResData(constants.Success, PageData{Data: rs, Total: total})
 	} else {
 		this.Data["json"] = ResData(constants.DataNull, PageData{Data: rs, Total: total})
+	}
+	this.ServeJSON()
+}
+
+// @Title 新增礼品
+// @Description 新增礼品
+// @router /gift [post]
+func (this *VipController) Post() {
+	var v VipGift
+	json.Unmarshal(this.Ctx.Input.RequestBody, &v)
+	if err := CreateVipGift(&v); err == nil {
+		this.Data["json"] = ResCode(constants.Success)
+	} else {
+		this.Data["json"] = ResCode(constants.DBError)
 	}
 	this.ServeJSON()
 }
