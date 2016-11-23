@@ -8,15 +8,17 @@ import (
 )
 
 type DeviceView struct {
-	Id         int64   `orm:"column(id);pk" json:"-"`
-	Park_ID    string  `orm:"column(Park_ID)" json:"parkID"`
-	PARK_NAME  string  `orm:"column(PARK_NAME)" json:"parkName"`
-	DevTypeDes string  `orm:"column(devTypeDes)" json:"devTypeDes"`
-	REGION_ID  string  `orm:"column(REGION_ID)" json:"regionID"`
-	LONGITUDE  float32 `orm:"column(LONGITUDE)" json:"lng"`
-	LATITUDE   float32 `orm:"column(LATITUDE)" json:"lat"`
-	HDModel    string  `orm:"column(HDModel)" json:"model"`
-	Status     string  `orm:"column(status)" json:"status"`
+	Id             int64   `orm:"column(id);pk" json:"-"`
+	Park_ID        string  `orm:"column(Park_ID)" json:"parkID"`
+	PARK_NAME      string  `orm:"column(PARK_NAME)" json:"parkName"`
+	DevTypeDes     string  `orm:"column(devTypeDes)" json:"devTypeDes"`
+	REGION_ID      string  `orm:"column(REGION_ID)" json:"regionID"`
+	LONGITUDE      float32 `orm:"column(LONGITUDE)" json:"lng"`
+	LATITUDE       float32 `orm:"column(LATITUDE)" json:"lat"`
+	HDModel        string  `orm:"column(HDModel)" json:"model"`
+	Status         string  `orm:"column(status)" json:"status"`
+	RcdType        string  `orm:"column(rcdType)" json:"rcdType"`
+	Termina_Status string  `orm:"column(TERMINA_STATUS)" json:"TERMINA_STATUS"`
 }
 
 func (this *DeviceView) TableName() string {
