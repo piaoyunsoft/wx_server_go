@@ -36,3 +36,5 @@ func PageQuery_QB(qb orm.QueryBuilder, result interface{}, page int, limit int) 
 	utils.Error(err)
 	return 0, err
 }
+
+//func Query()

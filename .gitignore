@@ -17,3 +17,4 @@ routers/commentsRouter_controllers_web_v1_user.go
 routers/commentsRouter_controllers_web_v1_park.go
 routers/commentsRouter_controllers_web_v1_charge.go
 routers/commentsRouter_controllers_common.go
+routers/commentsRouter_controllers_web_v1_sys.go
