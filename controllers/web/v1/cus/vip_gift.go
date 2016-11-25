@@ -2,6 +2,7 @@ package cus
 
 import (
 	"encoding/json"
+	"fmt"
 	"wx_server_go/constants"
 	. "wx_server_go/controllers/web/v1"
 	. "wx_server_go/models/cus"
@@ -9,6 +10,23 @@ import (
 
 type VipController struct {
 	BaseController
+}
+
+// @router /giftOne [get]
+func (this *VipController) GetOne() {
+	giftCode := this.GetString("giftCode")
+
+	if giftCode == "" {
+		this.Data["json"] = ResCode(constants.InvalidParams)
+		this.ServeJSON()
+		return
+	}
+	if res, err := GetVipGift(giftCode); err == nil {
+		this.Data["json"] = ResData(constants.Success, res)
+	} else {
+		this.Data["json"] = ResCode(constants.DBError)
+	}
+	this.ServeJSON()
 }
 
 // @Title 获取礼品信息
@@ -52,11 +70,27 @@ func (this *VipController) GetVipGift() {
 // @router /gift [post]
 func (this *VipController) Post() {
 	var v VipGift
-	json.Unmarshal(this.Ctx.Input.RequestBody, &v)
-	if err := CreateVipGift(&v); err == nil {
+	err := json.Unmarshal(this.Ctx.Input.RequestBody, &v)
+	fmt.Println(err)
+	//	this.ParseForm(&v)
+	if err = CreateVipGift(&v); err == nil {
 		this.Data["json"] = ResCode(constants.Success)
 	} else {
 		this.Data["json"] = ResCode(constants.DBError)
+	}
+	this.ServeJSON()
+}
+
+// @router /gift/:giftCode [delete]
+func (this *VipController) Delete() {
+	if giftCode := this.GetString(":giftCode"); giftCode == "" {
+		this.Data["json"] = ResCode(constants.InvalidParams)
+	} else {
+		if err := DelVipGift(giftCode); err == nil {
+			this.Data["json"] = ResCode(constants.Success)
+		} else {
+			this.Data["json"] = ResCode(constants.DBError)
+		}
 	}
 	this.ServeJSON()
 }
