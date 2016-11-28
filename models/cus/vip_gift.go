@@ -82,6 +82,7 @@ type VipGiftDtl struct {
 	AuditDate    time.Time `orm:"column(auditDate)" json:"-"`
 	GiftTypeName string    `orm:"column(giftTypeName)" json:"giftTypeName"`
 	GetWayName   string    `orm:"column(getWayName)" json:"getWayName"`
+	FullPicPath  string    `json:"fullPicPath"`
 }
 
 func (this *VipGift) TableName() string {
@@ -138,7 +139,7 @@ func GetPageVipGift(query map[string]string, page int, limit int) (total int64, 
 
 	if total, err = sqltool.PageQuery_QB(qb, &res, page, limit); err == nil {
 		for k, v := range res {
-			v.GiftPic = "http://" + beego.AppConfig.String("fileserver") + v.GiftPic
+			v.FullPicPath = "http://" + beego.AppConfig.String("fileserver") + v.GiftPic
 			res[k] = v
 		}
 		return total, res, nil
@@ -191,6 +192,7 @@ func CreateVipGift(m *VipGift) error {
 		return err
 	} else {
 		m.GiftCode = fmt.Sprintf("%d", id)
+		m.MakeDate = time.Now()
 		if _, err = o.Insert(m); err == nil {
 			return nil
 		} else {
@@ -198,6 +200,15 @@ func CreateVipGift(m *VipGift) error {
 			return err
 		}
 	}
+}
+
+func UpdateVipGift(item *VipGift) error {
+	o := orm.NewOrm()
+	_, err := o.Update(item)
+	if err != nil {
+		utils.Error(err)
+	}
+	return err
 }
 
 func DelVipGift(giftCode string) error {
