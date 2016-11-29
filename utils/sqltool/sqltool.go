@@ -37,4 +37,15 @@ func PageQuery_QB(qb orm.QueryBuilder, result interface{}, page int, limit int) 
 	return 0, err
 }
 
-//func Query()
+func GetQuerySeter(tableName interface{}) orm.QuerySeter {
+	o := orm.NewOrm()
+	qs := o.QueryTable(tableName)
+	return qs
+}
+
+func Query_QS(tableName interface{}, fun func(*orm.QuerySeter), res interface{}) error {
+	qs := GetQuerySeter(tableName)
+	fun(&qs)
+	_, err := qs.All(res)
+	return err
+}

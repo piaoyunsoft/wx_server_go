@@ -76,6 +76,11 @@ func init() {
 				&sys.SysController{},
 			),
 		),
+		beego.NSNamespace("/module",
+			beego.NSInclude(
+				&sys.ModuleController{},
+			),
+		),
 	)
 	nsCom := beego.NewNamespace("/com",
 		beego.NSNamespace("/file",
