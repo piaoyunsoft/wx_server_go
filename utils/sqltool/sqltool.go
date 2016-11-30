@@ -6,6 +6,10 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+type IdStruct struct {
+	Newid int `orm:"column(newid)"`
+}
+
 func GetQueryBuilder() orm.QueryBuilder {
 	qb, _ := orm.NewQueryBuilder("mysql")
 	return qb
@@ -43,9 +47,47 @@ func GetQuerySeter(tableName interface{}) orm.QuerySeter {
 	return qs
 }
 
-func Query_QS(tableName interface{}, fun func(*orm.QuerySeter), res interface{}) error {
+func Query_QS(tableName interface{}, fun func(orm.QuerySeter) orm.QuerySeter, res interface{}) error {
 	qs := GetQuerySeter(tableName)
-	fun(&qs)
+	qs = fun(qs)
 	_, err := qs.All(res)
 	return err
+}
+
+func Update(item interface{}) error {
+	o := orm.NewOrm()
+	_, err := o.Update(item)
+	if err != nil {
+		utils.Error(err)
+	}
+	return err
+}
+
+func Delete(item interface{}) error {
+	o := orm.NewOrm()
+	_, err := o.Delete(item)
+	if err != nil {
+		utils.Error(err)
+	}
+	return err
+}
+
+func Create(item interface{}) error {
+	o := orm.NewOrm()
+	if _, err := o.Insert(item); err == nil {
+		return nil
+	} else {
+		utils.Error(err)
+		return err
+	}
+}
+
+func NewId(tablename string) (int, error) {
+	o := orm.NewOrm()
+	var id IdStruct
+	err := o.Raw("call pro_sequence(?)", tablename).QueryRow(&id)
+	if err != nil {
+		utils.Error(err)
+	}
+	return id.Newid, err
 }

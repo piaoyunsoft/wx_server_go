@@ -1,6 +1,7 @@
 package sys
 
 import (
+	"strings"
 	"wx_server_go/models"
 	"wx_server_go/utils/sqltool"
 
@@ -20,17 +21,23 @@ type PowerModule struct {
 	ICON     string `orm:"column(ICON)" json:"icon"`
 }
 
+const tablename = "powertarget_module"
+
 func (this *PowerModule) TableName() string {
-	return models.TableName("powertarget_module")
+	return models.TableName(tablename)
 }
 
 func init() {
 	orm.RegisterModel(new(PowerModule))
 }
 
-func GetPowerModules() (res []PowerModule, err error) {
-	filterFunc := func(qs *orm.QuerySeter) {
-
+func GetPowerModules(query map[string]string) (res []PowerModule, err error) {
+	filterFunc := func(qs orm.QuerySeter) orm.QuerySeter {
+		for k, v := range query {
+			k = strings.Replace(k, ".", "__", -1)
+			qs = qs.Filter(k, v)
+		}
+		return qs
 	}
 
 	if err := sqltool.Query_QS(new(PowerModule), filterFunc, &res); err == nil {
@@ -38,4 +45,26 @@ func GetPowerModules() (res []PowerModule, err error) {
 	} else {
 		return nil, err
 	}
+}
+
+type IdStruct struct {
+	Newid int `orm:"column(newid)"`
+}
+
+func CreatePowerModule(item *PowerModule) error {
+	if id, err := sqltool.NewId(tablename); err == nil {
+		item.ID = id
+		return sqltool.Create(item)
+	} else {
+		return err
+	}
+}
+
+func UpdatePowerModule(item *PowerModule) error {
+	return sqltool.Update(item)
+}
+
+func DelPowerModule(id int) error {
+	filter := PowerModule{ID: id}
+	return sqltool.Delete(&filter)
 }

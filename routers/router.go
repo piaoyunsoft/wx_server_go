@@ -12,6 +12,7 @@ import (
 	"wx_server_go/controllers/web/v1/charge"
 	"wx_server_go/controllers/web/v1/cus"
 	"wx_server_go/controllers/web/v1/park"
+	"wx_server_go/controllers/web/v1/server"
 	"wx_server_go/controllers/web/v1/sys"
 	"wx_server_go/controllers/web/v1/user"
 	"wx_server_go/controllers/web/v1/wx"
@@ -79,6 +80,11 @@ func init() {
 		beego.NSNamespace("/module",
 			beego.NSInclude(
 				&sys.ModuleController{},
+			),
+		),
+		beego.NSNamespace("/server",
+			beego.NSInclude(
+				&server.ServerController{},
 			),
 		),
 	)
