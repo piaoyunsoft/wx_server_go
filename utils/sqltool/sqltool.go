@@ -15,10 +15,12 @@ func GetQueryBuilder() orm.QueryBuilder {
 	return qb
 }
 
-func PageQuery_QS(qs orm.QuerySeter, result interface{}, page int, limit int) (total int64, err error) {
+func PageQuery_QS(tableName interface{}, fun func(orm.QuerySeter) orm.QuerySeter, res interface{}, page int, size int) (total int64, err error) {
+	qs := GetQuerySeter(tableName)
+	qs = fun(qs)
 	if total, err = qs.Count(); err == nil {
-		offset := (page - 1) * limit
-		if _, err := qs.Limit(limit, offset).All(result); err == nil {
+		offset := (page - 1) * size
+		if _, err := qs.Limit(size, offset).All(res); err == nil {
 			return total, nil
 		}
 	}

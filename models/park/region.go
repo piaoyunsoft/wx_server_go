@@ -67,23 +67,23 @@ func recuRegion(res []Region, regionID string) []CascaderData {
 }
 
 func GetRegionList(query map[string]string, page int, limit int) (total int64, res []Region, err error) {
-	var regions []Region
-	o := orm.NewOrm()
-	qs := o.QueryTable(new(Region))
-	cond := orm.NewCondition()
-	// query k=v
-	for k, v := range query {
-		k = strings.Replace(k, ".", "__", -1)
-		qs = qs.Filter(k, v)
-		if k == "keyword" {
-			cond = cond.AndCond(cond.And("mbrName__icontains", v).Or("mobile__icontains", v))
+	filterFunc := func(qs orm.QuerySeter) orm.QuerySeter {
+		cond := orm.NewCondition()
+		// query k=v
+		for k, v := range query {
+			k = strings.Replace(k, ".", "__", -1)
+			qs = qs.Filter(k, v)
+			if k == "keyword" {
+				cond = cond.AndCond(cond.And("mbrName__icontains", v).Or("mobile__icontains", v))
+			}
 		}
+		qs = qs.SetCond(cond)
+		qs = qs.OrderBy("ID")
+		return qs
 	}
-	qs = qs.SetCond(cond)
-	qs = qs.OrderBy("ID")
 
-	if total, err = sqltool.PageQuery_QS(qs, &regions, page, limit); err == nil {
-		return total, regions, nil
+	if total, err = sqltool.PageQuery_QS(new(Region), filterFunc, &res, page, limit); err == nil {
+		return total, res, nil
 	} else {
 		return 0, nil, err
 	}

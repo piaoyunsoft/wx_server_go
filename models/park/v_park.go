@@ -31,23 +31,23 @@ func init() {
 }
 
 func GetParkViewList(query map[string]string, page int, limit int) (total int64, res []ParkView, err error) {
-	var parks []ParkView
-	o := orm.NewOrm()
-	qs := o.QueryTable(new(ParkView))
-	cond := orm.NewCondition()
-	// query k=v
-	for k, v := range query {
-		k = strings.Replace(k, ".", "__", -1)
-		//		qs = qs.Filter(k, v)
-		if k == "REGION_ID" {
-			cond = cond.And(k+"__icontains", v)
+	filterFunc := func(qs orm.QuerySeter) orm.QuerySeter {
+		cond := orm.NewCondition()
+		// query k=v
+		for k, v := range query {
+			k = strings.Replace(k, ".", "__", -1)
+			//		qs = qs.Filter(k, v)
+			if k == "REGION_ID" {
+				cond = cond.And(k+"__icontains", v)
+			}
 		}
+		qs = qs.SetCond(cond)
+		qs = qs.OrderBy("PARK_ID")
+		return qs
 	}
-	qs = qs.SetCond(cond)
-	qs = qs.OrderBy("PARK_ID")
 
-	if total, err = sqltool.PageQuery_QS(qs, &parks, page, limit); err == nil {
-		return total, parks, nil
+	if total, err = sqltool.PageQuery_QS(new(ParkView), filterFunc, &res, page, limit); err == nil {
+		return total, res, nil
 	} else {
 		return 0, nil, err
 	}

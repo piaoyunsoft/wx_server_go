@@ -48,32 +48,32 @@ func init() {
 }
 
 func ReadDtl_CusMbr(query map[string]string, page int, limit int) (total int64, res []PlatCusMbr, err error) {
-	var mbrs []PlatCusMbr
-	o := orm.NewOrm()
-	qs := o.QueryTable(new(PlatCusMbr))
-	cond := orm.NewCondition()
-	// query k=v
-	for k, v := range query {
-		k = strings.Replace(k, ".", "__", -1)
-		qs = qs.Filter(k, v)
-		if k == "keyword" {
-			cond = cond.AndCond(cond.And("mbrName__icontains", v).Or("mobile__icontains", v))
+	filterFunc := func(qs orm.QuerySeter) orm.QuerySeter {
+		cond := orm.NewCondition()
+		// query k=v
+		for k, v := range query {
+			k = strings.Replace(k, ".", "__", -1)
+			qs = qs.Filter(k, v)
+			if k == "keyword" {
+				cond = cond.AndCond(cond.And("mbrName__icontains", v).Or("mobile__icontains", v))
+			}
+			//		if k == "WxNickName" {
+			//			cond = cond.And(k+"__icontains", v)
+			//		} else if k == "begin" {
+			//			cond = cond.And("WxSubscribeTime__gte", v)
+			//		} else if k == "end" {
+			//			cond = cond.And("WxSubscribeTime__lte", v)
+			//		} else {
+			//			cond = cond.And(k, v)
+			//		}
 		}
-		//		if k == "WxNickName" {
-		//			cond = cond.And(k+"__icontains", v)
-		//		} else if k == "begin" {
-		//			cond = cond.And("WxSubscribeTime__gte", v)
-		//		} else if k == "end" {
-		//			cond = cond.And("WxSubscribeTime__lte", v)
-		//		} else {
-		//			cond = cond.And(k, v)
-		//		}
+		qs = qs.SetCond(cond)
+		qs = qs.OrderBy("mbrName")
+		return qs
 	}
-	qs = qs.SetCond(cond)
-	qs = qs.OrderBy("mbrName")
 
-	if total, err = sqltool.PageQuery_QS(qs, &mbrs, page, limit); err == nil {
-		return total, mbrs, nil
+	if total, err = sqltool.PageQuery_QS(new(PlatCusMbr), filterFunc, &res, page, limit); err == nil {
+		return total, res, nil
 	} else {
 		return 0, nil, err
 	}
