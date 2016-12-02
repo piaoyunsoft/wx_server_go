@@ -2,10 +2,12 @@ package users
 
 import (
 	"encoding/json"
-	"fmt"
 	"wx_server_go/constants"
 	"wx_server_go/controllers/api"
 	"wx_server_go/models/users"
+	"wx_server_go/utils"
+
+	"github.com/astaxie/beego/logs"
 )
 
 type AccountController struct {
@@ -41,11 +43,75 @@ func (this *AccountController) GetAll() {
 	this.ServeJSON()
 }
 
+// @router /:unicode [get]
+func (this *AccountController) GetOne() {
+	unicode := this.GetString(":unicode")
+
+	if unicode == "" {
+		this.Data["json"] = v1.ResCode(constants.InvalidParams)
+		this.ServeJSON()
+		return
+	}
+	if res, err := users.GetAccountByUnicode(unicode); err == nil {
+		this.Data["json"] = v1.ResData(constants.Success, res)
+	} else {
+		this.Data["json"] = v1.ResCode(constants.DBError)
+	}
+	this.ServeJSON()
+}
+
+// @router /check [get]
+func (this *AccountController) CheckAccount() {
+	query := make(map[string]string)
+
+	if v := this.GetString("accountName"); v != "" {
+		query["accountName"] = v
+	}
+	if v := this.GetString("mobile"); v != "" {
+		query["mobile"] = v
+	}
+	if v := this.GetString("unicode"); v != "" {
+		query["unicode"] = v
+	}
+	if rs, err := users.CheckAccount(query); err == nil {
+		if rs {
+			this.Data["json"] = v1.ResData(constants.Success, "success")
+		} else {
+			this.Data["json"] = v1.ResData(constants.Success, "fail")
+		}
+	} else {
+		this.Data["json"] = v1.ResData(constants.DataNull, "fail")
+	}
+	this.ServeJSON()
+}
+
+// @router /login [post]
+func (this *AccountController) Login() {
+	var v users.Account
+	err := json.Unmarshal(this.Ctx.Input.RequestBody, &v)
+
+	if err != nil || v.AccountName == "" || v.Password == "" {
+		this.Data["json"] = v1.ResCode(constants.InvalidParams)
+		this.ServeJSON()
+		return
+	}
+	if res, err := users.Login(v.AccountName, v.Password); err == nil {
+		if token, err := utils.CreateToken(res.Unicode, res.FromDeptId); err == nil {
+			this.Data["json"] = v1.ResData(constants.Success, token)
+		} else {
+			logs.Error(err)
+			this.Data["json"] = v1.ResCode(constants.LoginFail)
+		}
+	} else {
+		this.Data["json"] = v1.ResCode(constants.DBError)
+	}
+	this.ServeJSON()
+}
+
 // @router / [post]
 func (this *AccountController) Post() {
 	var v users.Account
 	err := json.Unmarshal(this.Ctx.Input.RequestBody, &v)
-	fmt.Println(v)
 	//	this.ParseForm(&v)
 	if err = users.CreateAccount(&v); err == nil {
 		this.Data["json"] = v1.ResCode(constants.Success)

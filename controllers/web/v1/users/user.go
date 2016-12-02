@@ -3,6 +3,7 @@ package users
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"wx_server_go/constants"
 	. "wx_server_go/controllers/web/v1"
 	"wx_server_go/utils"
@@ -42,7 +43,7 @@ func (this *UserController) Post() {
 	if user.UserName == "admin" && user.Password == "000000" {
 		user.Id = 111
 
-		if token, err := utils.CreateToken(user.Id); err == nil {
+		if token, err := utils.CreateToken(strconv.FormatInt(user.Id, 10), ""); err == nil {
 			this.Data["json"] = ResData(constants.Success, token)
 		} else {
 			logs.Error(err)

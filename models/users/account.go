@@ -1,6 +1,7 @@
 package users
 
 import (
+	"strconv"
 	"strings"
 	"time"
 	"wx_server_go/models"
@@ -35,6 +36,7 @@ func init() {
 
 func GetAccounts(query map[string]string, page int, size int) (total int64, res []Account, err error) {
 	filterFunc := func(qs orm.QuerySeter) orm.QuerySeter {
+		cond := orm.NewCondition()
 		for k, v := range query {
 			k = strings.Replace(k, ".", "__", -1)
 			//			qs = qs.Filter(k, v)
@@ -44,8 +46,15 @@ func GetAccounts(query map[string]string, page int, size int) (total int64, res 
 				qs = qs.Filter("Mobile__icontains", v)
 			} else if k == "status" {
 				qs = qs.Filter("Status", v)
+			} else if k == "unicode" {
+				qs = qs.Filter("unicode", v)
+			} else if k == "username" {
+				cond = cond.AndCond(cond.And("AccountName", v).Or("Mobile", v))
+			} else if k == "password" {
+				qs = qs.Filter("Password", v)
 			}
 		}
+		qs = qs.SetCond(cond)
 		return qs
 	}
 
@@ -56,9 +65,68 @@ func GetAccounts(query map[string]string, page int, size int) (total int64, res 
 	}
 }
 
+func Login(username string, password string) (Account, error) {
+	var query = make(map[string]string)
+	query["username"] = username
+	query["password"] = password
+	if count, results, err := GetAccounts(query, 1, 1); count > 0 && err == nil {
+		return results[0], err
+	} else {
+		return Account{}, err
+	}
+}
+
+func GetAccountByUnicode(unicode string) (interface{}, error) {
+	var query = make(map[string]string)
+	query["unicode"] = unicode
+	if count, results, err := GetAccounts(query, 1, 1); count > 0 && err == nil {
+		return results[0], err
+	} else {
+		return nil, err
+	}
+}
+
+func CheckAccount(query map[string]string) (bool, error) {
+	unicode := ""
+	for k, v := range query {
+		if k == "unicode" {
+			unicode = v
+		}
+	}
+	filterFunc := func(qs orm.QuerySeter) orm.QuerySeter {
+		for k, v := range query {
+			k = strings.Replace(k, ".", "__", -1)
+			//			qs = qs.Filter(k, v)
+			if k == "accountName" {
+				qs = qs.Filter("AccountName", v)
+			} else if k == "mobile" {
+				qs = qs.Filter("Mobile", v)
+			}
+		}
+		return qs
+	}
+
+	var res []Account
+	if err := sqltool.Query_QS(new(Account), filterFunc, &res); err == nil {
+		if len(res) > 0 {
+			for _, v := range res {
+				if v.Unicode != unicode {
+					return false, nil
+				}
+			}
+			return true, nil
+		} else {
+			return true, nil
+		}
+	} else {
+		return false, err
+	}
+}
+
 func CreateAccount(item *Account) error {
 	if id, err := sqltool.NewId(tablename); err == nil {
-		item.Unicode = utils.Leftpad(string(id), 12, 0)
+		item.Unicode = utils.Leftpad(strconv.Itoa(id), 12, 48)
+		item.Password = "000000"
 		return sqltool.Create(item)
 	} else {
 		return err
