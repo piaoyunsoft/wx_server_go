@@ -3,7 +3,7 @@ package sys
 import (
 	"encoding/json"
 	"wx_server_go/constants"
-	"wx_server_go/controllers/api"
+	"wx_server_go/controllers/web/v1"
 	"wx_server_go/models/sys"
 )
 

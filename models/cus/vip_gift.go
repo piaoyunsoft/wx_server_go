@@ -204,6 +204,7 @@ func CreateVipGift(m *VipGift) error {
 
 func UpdateVipGift(item *VipGift) error {
 	o := orm.NewOrm()
+	item.AuditDate = time.Now()
 	_, err := o.Update(item)
 	if err != nil {
 		utils.Error(err)

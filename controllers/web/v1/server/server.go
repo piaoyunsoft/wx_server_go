@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"wx_server_go/constants"
-	"wx_server_go/controllers/api"
+	"wx_server_go/controllers/web/v1"
 
 	"github.com/astaxie/beego"
 )

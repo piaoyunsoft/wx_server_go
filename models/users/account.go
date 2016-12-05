@@ -1,6 +1,7 @@
 package users
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 	"time"
@@ -41,17 +42,17 @@ func GetAccounts(query map[string]string, page int, size int) (total int64, res 
 			k = strings.Replace(k, ".", "__", -1)
 			//			qs = qs.Filter(k, v)
 			if k == "accountName" {
-				qs = qs.Filter("AccountName__icontains", v)
+				cond = cond.And("AccountName__icontains", v)
 			} else if k == "mobile" {
-				qs = qs.Filter("Mobile__icontains", v)
+				cond = cond.And("Mobile__icontains", v)
 			} else if k == "status" {
-				qs = qs.Filter("Status", v)
+				cond = cond.And("Status", v)
 			} else if k == "unicode" {
-				qs = qs.Filter("unicode", v)
+				cond = cond.And("Unicode", v)
 			} else if k == "username" {
 				cond = cond.AndCond(cond.And("AccountName", v).Or("Mobile", v))
 			} else if k == "password" {
-				qs = qs.Filter("Password", v)
+				cond = cond.And("Password", v)
 			}
 		}
 		qs = qs.SetCond(cond)
@@ -65,14 +66,19 @@ func GetAccounts(query map[string]string, page int, size int) (total int64, res 
 	}
 }
 
-func Login(username string, password string) (Account, error) {
+func Login(username string, password string) (interface{}, error) {
 	var query = make(map[string]string)
 	query["username"] = username
 	query["password"] = password
-	if count, results, err := GetAccounts(query, 1, 1); count > 0 && err == nil {
-		return results[0], err
+	query["status"] = "aa"
+	if count, results, err := GetAccounts(query, 1, 1); err == nil {
+		if count > 0 {
+			return results[0], err
+		} else {
+			return results[0], errors.New("no account data")
+		}
 	} else {
-		return Account{}, err
+		return nil, err
 	}
 }
 

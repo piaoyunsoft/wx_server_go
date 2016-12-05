@@ -6,7 +6,7 @@ import (
 	"github.com/astaxie/beego"
 )
 
-type BaseController struct {
+type BaseApiController struct {
 	beego.Controller
 }
 
@@ -23,7 +23,7 @@ type PageData struct {
 	Total int64       `json:"total"`
 }
 
-func (this *BaseController) Prepare() {
+func (this *BaseApiController) Prepare() {
 	//	runmode := beego.AppConfig.DefaultString("runmode", "pro")
 	//	if runmode == "pro" && !strings.Contains(this.Ctx.Request.RequestURI, "/web/v1/user/login") {
 	//		token := this.Ctx.Request.Header.Get("token")

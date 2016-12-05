@@ -3,7 +3,7 @@ package users
 import (
 	"encoding/json"
 	"wx_server_go/constants"
-	"wx_server_go/controllers/api"
+	"wx_server_go/controllers/web/v1"
 	"wx_server_go/models/users"
 	"wx_server_go/utils"
 
@@ -96,12 +96,24 @@ func (this *AccountController) Login() {
 		return
 	}
 	if res, err := users.Login(v.AccountName, v.Password); err == nil {
-		if token, err := utils.CreateToken(res.Unicode, res.FromDeptId); err == nil {
-			this.Data["json"] = v1.ResData(constants.Success, token)
+		rs, ok := res.(users.Account)
+		if ok {
+			if token, err := utils.CreateToken(rs.Unicode, rs.FromDeptId); err == nil {
+				//				query := make(map[string]string)
+				//				query["cusID"] = v1.CusId
+				//				cus, _ := cus.GetPlatCus(query)
+				loginRs := make(map[string]interface{})
+				loginRs["token"] = token
+				//				loginRs["cus"] = cus
+				this.Data["json"] = v1.ResData(constants.Success, loginRs)
+			} else {
+				logs.Error(err)
+				this.Data["json"] = v1.ResCode(constants.LoginFail)
+			}
 		} else {
-			logs.Error(err)
 			this.Data["json"] = v1.ResCode(constants.LoginFail)
 		}
+
 	} else {
 		this.Data["json"] = v1.ResCode(constants.DBError)
 	}

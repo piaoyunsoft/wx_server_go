@@ -12,8 +12,8 @@ type BaseController struct {
 	beego.Controller
 }
 
-var userid string
-var cusId string
+var Userid string
+var CusId string
 
 type Response struct {
 	ErrCode constants.ErrCode `json:"errcode"`
@@ -39,8 +39,8 @@ func (this *BaseController) Prepare() {
 			this.Data["json"] = ResCode(constants.InvalidToken)
 			this.ServeJSON()
 		} else {
-			userid = userid
-			cusId = cusid
+			Userid = userid
+			CusId = cusid
 		}
 	}
 }
