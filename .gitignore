@@ -20,3 +20,4 @@ routers/commentsRouter_controllers_common.go
 routers/commentsRouter_controllers_web_v1_sys.go
 routers/commentsRouter_controllers_web_v1_server.go
 routers/commentsRouter_controllers_web_v1_users.go
+routers/commentsRouter____wx_server_go_controllers_common.go
