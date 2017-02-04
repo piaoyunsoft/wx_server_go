@@ -119,15 +119,15 @@ func GetPageVipGift(query map[string]string, page int, limit int) (total int64, 
 	for k, v := range query {
 		k = strings.Replace(k, ".", "__", -1)
 		if k == "giftName" {
-			_w += " and giftName like '%" + v + "%'"
+			_w += " and giftName like '%" + sqltool.SqlFormat(v) + "%'"
 		} else if k == "begin" {
-			_w += " and begDate >= '" + v + "' "
+			_w += " and begDate >= '" + sqltool.SqlFormat(v) + "' "
 		} else if k == "end" {
-			_w += " and endDate <= '" + v + "' "
+			_w += " and endDate <= '" + sqltool.SqlFormat(v) + "' "
 		} else if k == "giftType" {
-			_w += " and giftType = '" + v + "' "
+			_w += " and giftType = '" + sqltool.SqlFormat(v) + "' "
 		} else if k == "giftCode" {
-			_w += " and giftCode = '" + v + "' "
+			_w += " and giftCode = '" + sqltool.SqlFormat(v) + "' "
 		}
 	}
 	qb.Select("a.*", "b.itemname as giftTypeName", "c.itemname as getWayName").From("vipgiftlist as a").

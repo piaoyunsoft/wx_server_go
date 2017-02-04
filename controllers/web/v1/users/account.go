@@ -35,7 +35,7 @@ func (this *AccountController) GetAll() {
 	if v := this.GetString("status"); v != "" {
 		query["status"] = v
 	}
-	if total, rs, err := users.GetAccounts(query, page, size); err == nil {
+	if total, rs, err := users.GetPageAccounts(query, page, size); err == nil {
 		this.Data["json"] = v1.ResData(constants.Success, v1.PageData{Data: rs, Total: total})
 	} else {
 		this.Data["json"] = v1.ResData(constants.DataNull, rs)
@@ -156,6 +156,19 @@ func (this *AccountController) Delete() {
 		} else {
 			this.Data["json"] = v1.ResCode(constants.DBError)
 		}
+	}
+	this.ServeJSON()
+}
+
+// @router /resetPwd [post]
+func (this *AccountController) ResetPwd() {
+	var v users.Account
+	err := json.Unmarshal(this.Ctx.Input.RequestBody, &v)
+	//	this.ParseForm(&v)
+	if err = users.ResetPwd(&v); err == nil {
+		this.Data["json"] = v1.ResCode(constants.Success)
+	} else {
+		this.Data["json"] = v1.ResCode(constants.DBError)
 	}
 	this.ServeJSON()
 }

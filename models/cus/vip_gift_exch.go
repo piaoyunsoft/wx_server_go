@@ -46,7 +46,7 @@ type VipGiftExchDtl struct {
 	CreateDate    time.Time `orm:"column(createDate)" json:"createDate"`
 	ChangeDate    time.Time `orm:"column(changeDate)" json:"changeDate"`
 	//扩展
-	MbrName        string `orm:"column(mbrName)" json:"mbrName"`
+	NickName       string `orm:"column(nickName)" json:"nickName"`
 	GetWayName     string `orm:"column(getWayName)" json:"getWayName"`
 	MailStatusName string `orm:"column(mailStatusName)" json:"mailStatusName"`
 }
@@ -65,17 +65,17 @@ func GetPageVipGiftExch(query map[string]string, page int, limit int) (total int
 	for k, v := range query {
 		k = strings.Replace(k, ".", "__", -1)
 		if k == "giftName" {
-			_w += " and a.giftName like '%" + v + "%'"
+			_w += " and a.giftName like '%" + sqltool.SqlFormat(v) + "%'"
 		} else if k == "begin" {
-			_w += " and a.createDate >= '" + v + "' "
+			_w += " and a.createDate >= '" + sqltool.SqlFormat(v) + "' "
 		} else if k == "end" {
-			_w += " and a.createDate <= '" + v + "' "
+			_w += " and a.createDate <= '" + sqltool.SqlFormat(v) + "' "
 		} else if k == "mbr" {
-			_w += " and b.mbrName like '%" + v + "%'"
+			_w += " and b.wxNickName like '%" + sqltool.SqlFormat(v) + "%'"
 		}
 	}
-	qb.Select("a.*", "b.mbrName", "c.itemname as getWayName", "d.itemname as mailStatusName").From("vipgiftexch as a").
-		LeftJoin("platcusmbr as b").On("(b.mbrId = a.mbrID and b.cusId =a.comId)").
+	qb.Select("a.*", "b.wxNickName as nickName", "c.itemname as getWayName", "d.itemname as mailStatusName").From("vipgiftexch as a").
+		LeftJoin("wxsubscribe as b").On("(b.wxOpenId = a.wxOpenID and b.comID = a.comId)").
 		LeftJoin("dictitem as c").On("(c.itemcode = a.getWay and c.dictcode = '002')").
 		LeftJoin("dictitem as d").On("(d.itemcode = a.mailStatus and d.dictcode = '003')").
 		Where(_w).

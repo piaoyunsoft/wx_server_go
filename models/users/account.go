@@ -25,6 +25,20 @@ type Account struct {
 	VldDtm      time.Time `orm:"column(vldDtm)" json:"vldDtm"`
 }
 
+type AccountModel struct {
+	Unicode     string    `orm:"column(Unicode);pk" json:"unicode"`
+	Password    string    `orm:"column(Password)" json:"password"`
+	Status      string    `orm:"column(Status)" json:"status"`
+	Mobile      string    `orm:"column(Mobile)" json:"mobile"`
+	UserId      string    `orm:"column(UserId)" json:"userId"`
+	AccountName string    `orm:"column(AccountName)" json:"accountName"`
+	FromSys     string    `orm:"column(FromSys)" json:"-"`
+	FromDeptId  string    `orm:"column(FromDeptId)" json:"cusId"`
+	Remark      string    `orm:"column(Remark)" json:"remark"`
+	VldDtm      time.Time `orm:"column(vldDtm)" json:"vldDtm"`
+	CusName     string    `orm:"column(cusName)" json:"cusName"`
+}
+
 const tablename = "account"
 
 func (this *Account) TableName() string {
@@ -66,6 +80,38 @@ func GetAccounts(query map[string]string, page int, size int) (total int64, res 
 	}
 }
 
+func GetPageAccounts(query map[string]string, page int, size int) (total int64, res []AccountModel, err error) {
+	qb := sqltool.GetQueryBuilder()
+	_w := "1=1"
+	for k, v := range query {
+		k = strings.Replace(k, ".", "__", -1)
+		if k == "accountName" {
+			_w += " and AccountName like '%" + sqltool.SqlFormat(v) + "%'"
+		} else if k == "mobile" {
+			_w += " and Mobile like '%" + sqltool.SqlFormat(v) + "%'"
+		} else if k == "status" {
+			_w += " and Status = '" + sqltool.SqlFormat(v) + "'"
+		} else if k == "unicode" {
+			_w += " and Unicode = '" + sqltool.SqlFormat(v) + "'"
+		} else if k == "username" {
+			_w += " (and AccountName = '" + sqltool.SqlFormat(v) + "' or Mobile = '" + sqltool.SqlFormat(v) + "'"
+		} else if k == "password" {
+			_w += " and Password = '" + sqltool.SqlFormat(v) + "'"
+		}
+	}
+	qb.Select("a.*", "b.cusName").From("account as a").
+		LeftJoin("platcus as b").On("b.cusID = a.FromDeptId").
+		Where(_w).
+		OrderBy("a.Unicode").
+		Desc()
+
+	if total, err = sqltool.PageQuery_QB(qb, &res, page, size); err == nil {
+		return total, res, nil
+	} else {
+		return 0, nil, err
+	}
+}
+
 func Login(username string, password string) (interface{}, error) {
 	var query = make(map[string]string)
 	query["username"] = username
@@ -75,7 +121,7 @@ func Login(username string, password string) (interface{}, error) {
 		if count > 0 {
 			return results[0], err
 		} else {
-			return results[0], errors.New("no account data")
+			return nil, errors.New("no account data")
 		}
 	} else {
 		return nil, err
@@ -146,4 +192,9 @@ func UpdateAccount(item *Account) error {
 func DelAccount(unicode string) error {
 	filter := Account{Unicode: unicode}
 	return sqltool.Delete(&filter)
+}
+
+func ResetPwd(item *Account) error {
+	item.Password = "000000"
+	return sqltool.Update(item, "Password")
 }

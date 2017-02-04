@@ -55,13 +55,13 @@ func ReadDtl_WxTask(query map[string]string, page int, limit int) (total int64, 
 	for k, v := range query {
 		k = strings.Replace(k, ".", "__", -1)
 		if k == "nickName" {
-			_w += " and (b.wxNickName like '%" + v + "%' or a.ToCusMbrName like '%" + v + "%' )"
+			_w += " and (b.wxNickName like '%" + sqltool.SqlFormat(v) + "%' or a.ToCusMbrName like '%" + sqltool.SqlFormat(v) + "%' )"
 		} else if k == "begin" {
-			_w += " and sendDtm >= '" + v + "' "
+			_w += " and sendDtm >= '" + sqltool.SqlFormat(v) + "' "
 		} else if k == "end" {
-			_w += " and sendDtm <= '" + v + "' "
+			_w += " and sendDtm <= '" + sqltool.SqlFormat(v) + "' "
 		} else if k == "status" {
-			_w += " and a.status = '" + v + "' "
+			_w += " and a.status = '" + sqltool.SqlFormat(v) + "' "
 		}
 	}
 

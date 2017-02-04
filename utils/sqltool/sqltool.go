@@ -3,6 +3,10 @@ package sqltool
 import (
 	"wx_server_go/utils"
 
+	"strings"
+
+	"time"
+
 	"github.com/astaxie/beego/orm"
 )
 
@@ -56,9 +60,9 @@ func Query_QS(tableName interface{}, fun func(orm.QuerySeter) orm.QuerySeter, re
 	return err
 }
 
-func Update(item interface{}) error {
+func Update(item interface{}, cols ...string) error {
 	o := orm.NewOrm()
-	_, err := o.Update(item)
+	_, err := o.Update(item, cols...)
 	if err != nil {
 		utils.Error(err)
 	}
@@ -92,4 +96,33 @@ func NewId(tablename string) (int, error) {
 		utils.Error(err)
 	}
 	return id.Newid, err
+}
+
+func SqlFormat(to_match_str string) string {
+	temp := strings.Replace(to_match_str, "--", "", -1)
+	temp = strings.Replace(to_match_str, "'", "", -1)
+	return temp
+}
+
+func StrToTime(s string, format string) time.Time {
+	tempFormat := strings.Replace(format, "yyyy", "2006", -1)
+	tempFormat = strings.Replace(tempFormat, "MM", "01", -1)
+	tempFormat = strings.Replace(tempFormat, "dd", "02", -1)
+	tempFormat = strings.Replace(tempFormat, "HH", "15", -1)
+	tempFormat = strings.Replace(tempFormat, "mm", "04", -1)
+	tempFormat = strings.Replace(tempFormat, "ss", "05", -1)
+	loc, _ := time.LoadLocation("Local")
+	formatTime, _ := time.ParseInLocation(tempFormat, s, loc)
+	return formatTime
+}
+
+func TimeToStr(t time.Time, format string) string {
+	tempFormat := strings.Replace(format, "yyyy", "2006", -1)
+	tempFormat = strings.Replace(tempFormat, "MM", "01", -1)
+	tempFormat = strings.Replace(tempFormat, "dd", "02", -1)
+	tempFormat = strings.Replace(tempFormat, "HH", "15", -1)
+	tempFormat = strings.Replace(tempFormat, "mm", "04", -1)
+	tempFormat = strings.Replace(tempFormat, "ss", "05", -1)
+	formatTime := t.Format(tempFormat)
+	return formatTime
 }
