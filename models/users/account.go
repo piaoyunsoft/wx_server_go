@@ -86,17 +86,17 @@ func GetPageAccounts(query map[string]string, page int, size int) (total int64, 
 	for k, v := range query {
 		k = strings.Replace(k, ".", "__", -1)
 		if k == "accountName" {
-			_w += " and AccountName like '%" + sqltool.SqlFormat(v) + "%'"
+			_w += " and a.AccountName like '%" + sqltool.SqlFormat(v) + "%'"
 		} else if k == "mobile" {
-			_w += " and Mobile like '%" + sqltool.SqlFormat(v) + "%'"
+			_w += " and a.Mobile like '%" + sqltool.SqlFormat(v) + "%'"
 		} else if k == "status" {
-			_w += " and Status = '" + sqltool.SqlFormat(v) + "'"
+			_w += " and a.Status = '" + sqltool.SqlFormat(v) + "'"
 		} else if k == "unicode" {
-			_w += " and Unicode = '" + sqltool.SqlFormat(v) + "'"
+			_w += " and a.Unicode = '" + sqltool.SqlFormat(v) + "'"
 		} else if k == "username" {
-			_w += " (and AccountName = '" + sqltool.SqlFormat(v) + "' or Mobile = '" + sqltool.SqlFormat(v) + "'"
+			_w += " (and a.AccountName = '" + sqltool.SqlFormat(v) + "' or Mobile = '" + sqltool.SqlFormat(v) + "'"
 		} else if k == "password" {
-			_w += " and Password = '" + sqltool.SqlFormat(v) + "'"
+			_w += " and a.Password = '" + sqltool.SqlFormat(v) + "'"
 		}
 	}
 	qb.Select("a.*", "b.cusName").From("account as a").
