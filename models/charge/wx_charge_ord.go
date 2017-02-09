@@ -23,8 +23,7 @@ type WxChargeOrd struct {
 	ErrMsg      string    `orm:"column(errMsg)" json:"errMsg"`
 	CreateDate  time.Time `orm:"column(createDate)" json:"createDate"`
 	ChangeDate  time.Time `orm:"column(changeDate)" json:"changeDate"`
-	MbrName     string    `orm:"column(mbrName)" json:"mbrName"`
-	Mobile      string    `orm:"column(mobile)" json:"mobile"`
+	NickName    string    `orm:"column(nickName)" json:"nickName"`
 }
 
 func (this *WxChargeOrd) TableName() string {
@@ -42,16 +41,16 @@ func GetPageChargeOrds(query map[string]string, page int, limit int) (total int6
 	for k, v := range query {
 		k = strings.Replace(k, ".", "__", -1)
 		if k == "keyword" {
-			_w += " and (b.mbrName like '%" + v + "%' or b.mobile like '%" + v + "%' )"
+			_w += " and (b.wxNickName like '%" + sqltool.SqlFormat(v) + "%' )"
 		} else if k == "begin" {
-			_w += " and payTime >= '" + v + "' "
+			_w += " and payTime >= '" + sqltool.SqlFormat(v) + "' "
 		} else if k == "end" {
-			_w += " and payTime <= '" + v + "' "
+			_w += " and payTime <= '" + sqltool.SqlFormat(v) + "' "
 		}
 	}
 
-	qb.Select("a.*", "b.mbrName", "b.mobile").From("wxchargeodr as a").
-		LeftJoin("platcusmbr as b").On("(b.mbrId = a.mbrId and a.comId = b.cusId)").
+	qb.Select("a.*", "b.wxNickName as nickName").From("wxchargeodr as a").
+		LeftJoin("wxsubscribe as b").On("(b.wxOpenId = a.wxOpenID and b.comID = a.comId)").
 		Where(_w).
 		OrderBy("a.odrID").
 		Desc()
