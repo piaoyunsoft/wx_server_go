@@ -43,9 +43,13 @@ func GetPageChargeOrds(query map[string]string, page int, limit int) (total int6
 		if k == "keyword" {
 			_w += " and (b.wxNickName like '%" + sqltool.SqlFormat(v) + "%' )"
 		} else if k == "begin" {
-			_w += " and payTime >= '" + sqltool.SqlFormat(v) + "' "
+			_w += " and a.createDate >= '" + sqltool.SqlFormat(v) + "' "
 		} else if k == "end" {
-			_w += " and payTime <= '" + sqltool.SqlFormat(v) + "' "
+			_w += " and a.createDate <= '" + sqltool.SqlFormat(v) + "' "
+		} else if k == "status" {
+			_w += " and a.status = '" + sqltool.SqlFormat(v) + "' "
+		} else if k == "payPtf" {
+			_w += " and a.payPtf = '" + sqltool.SqlFormat(v) + "' "
 		}
 	}
 

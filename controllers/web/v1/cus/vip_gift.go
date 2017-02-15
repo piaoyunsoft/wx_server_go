@@ -11,6 +11,23 @@ type VipController struct {
 	BaseController
 }
 
+// @router /checkGiftName [get]
+func (this *VipController) CheckGiftName() {
+	giftCode := this.GetString("giftCode")
+	giftName := this.GetString("giftName")
+
+	if res, err := CheckGiftName(giftCode, giftName); err == nil {
+		if res == nil {
+			this.Data["json"] = ResData(constants.Success, "success")
+		} else {
+			this.Data["json"] = ResData(constants.Success, "fail")
+		}
+	} else {
+		this.Data["json"] = ResData(constants.DBError, "fail")
+	}
+	this.ServeJSON()
+}
+
 // @router /giftOne [get]
 func (this *VipController) GetOne() {
 	giftCode := this.GetString("giftCode")

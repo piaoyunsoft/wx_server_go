@@ -93,6 +93,29 @@ func init() {
 	orm.RegisterModel(new(VipGift))
 }
 
+func CheckGiftName(giftCode string, giftName string) (interface{}, error) {
+	var query = make(map[string]string)
+	if giftCode != "" {
+		query["giftCode"] = giftCode
+	}
+	query["giftNameValid"] = giftName
+	if count, results, err := GetPageVipGift(query, 1, 1); count > 0 && err == nil {
+		return results[0], err
+	} else {
+		return nil, err
+	}
+
+	//	o := orm.NewOrm()
+	//	filter := VipGift{GiftCode: giftCode}
+
+	//	err = o.Read(&filter)
+	//	filter.GiftPic = "http://" + beego.AppConfig.String("fileserver") + filter.GiftPic
+	//	if err != nil {
+	//		utils.Error(err)
+	//	}
+	//	return filter, err
+}
+
 func GetVipGift(giftCode string) (interface{}, error) {
 	var query = make(map[string]string)
 	query["giftCode"] = giftCode
@@ -128,6 +151,8 @@ func GetPageVipGift(query map[string]string, page int, limit int) (total int64, 
 			_w += " and giftType = '" + sqltool.SqlFormat(v) + "' "
 		} else if k == "giftCode" {
 			_w += " and giftCode = '" + sqltool.SqlFormat(v) + "' "
+		} else if k == "giftNameValid" {
+			_w += " and giftName = '" + sqltool.SqlFormat(v) + "' "
 		}
 	}
 	qb.Select("a.*", "b.itemname as giftTypeName", "c.itemname as getWayName").From("vipgiftlist as a").

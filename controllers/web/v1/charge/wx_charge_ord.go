@@ -34,6 +34,12 @@ func (this *ChargeController) GetWxChargeOrd() {
 	if v := this.GetString("end"); v != "" {
 		query["end"] = v
 	}
+	if v := this.GetString("status"); v != "" {
+		query["status"] = v
+	}
+	if v := this.GetString("payPtf"); v != "" {
+		query["payPtf"] = v
+	}
 	if total, rs, err := GetPageChargeOrds(query, page, size); err == nil {
 		this.Data["json"] = ResData(constants.Success, PageData{Data: rs, Total: total})
 	} else {
