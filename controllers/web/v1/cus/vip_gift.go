@@ -16,14 +16,10 @@ func (this *VipController) CheckGiftName() {
 	giftCode := this.GetString("giftCode")
 	giftName := this.GetString("giftName")
 
-	if res, err := CheckGiftName(giftCode, giftName); err == nil {
-		if res == nil {
-			this.Data["json"] = ResData(constants.Success, "success")
-		} else {
-			this.Data["json"] = ResData(constants.Success, "fail")
-		}
+	if flag := CheckGiftName(giftCode, giftName); flag {
+		this.Data["json"] = ResData(constants.Success, "success")
 	} else {
-		this.Data["json"] = ResData(constants.DBError, "fail")
+		this.Data["json"] = ResData(constants.Success, "fail")
 	}
 	this.ServeJSON()
 }

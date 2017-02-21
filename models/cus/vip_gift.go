@@ -55,7 +55,7 @@ type VipGift struct {
 	EndDate     time.Time `orm:"column(endDate)" json:"endDate"`
 	Status      string    `orm:"column(status)" json:"status"`
 	MakePerson  string    `orm:"column(makePerson)" json:"-"`
-	MakeDate    time.Time `orm:"column(makeDate);auto_now_add;type(datetime)" json:"-"`
+	MakeDate    time.Time `orm:"column(makeDate);auto_now_add;type(datetime);null" json:"-"`
 	AuditPerson string    `orm:"column(auditPerson)" json:"-"`
 	AuditDate   time.Time `orm:"column(auditDate)" json:"-"`
 }
@@ -93,16 +93,26 @@ func init() {
 	orm.RegisterModel(new(VipGift))
 }
 
-func CheckGiftName(giftCode string, giftName string) (interface{}, error) {
+func CheckGiftName(giftCode string, giftName string) bool {
 	var query = make(map[string]string)
 	if giftCode != "" {
 		query["giftCode"] = giftCode
 	}
 	query["giftNameValid"] = giftName
-	if count, results, err := GetPageVipGift(query, 1, 1); count > 0 && err == nil {
-		return results[0], err
+	if count, result, err := GetPageVipGift(query, 1, 2); err == nil {
+		if count > 1 {
+			return false
+		} else if count > 0 {
+			if result[0].GiftCode == giftCode {
+				return true
+			} else {
+				return false
+			}
+		} else {
+			return true
+		}
 	} else {
-		return nil, err
+		return false
 	}
 
 	//	o := orm.NewOrm()
@@ -229,6 +239,7 @@ func CreateVipGift(m *VipGift) error {
 
 func UpdateVipGift(item *VipGift) error {
 	o := orm.NewOrm()
+	item.MakeDate = time.Now()
 	item.AuditDate = time.Now()
 	_, err := o.Update(item)
 	if err != nil {
