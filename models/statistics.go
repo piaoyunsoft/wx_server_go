@@ -193,7 +193,7 @@ func today_bind_statisitcs(o orm.Ormer) (int64, error) {
 //总充值金额
 func total_charge_statisitcs(o orm.Ormer) (float64, error) {
 	var maps []orm.Params
-	_, err := o.Raw("select sum(amt) as amt from wxchargeodr where status = 'yy'").Values(&maps)
+	_, err := o.Raw("select sum(amt) as amt from wxchargeodr where status = 'aa'").Values(&maps)
 	if err != nil {
 		return 0, err
 	} else {
@@ -204,7 +204,7 @@ func total_charge_statisitcs(o orm.Ormer) (float64, error) {
 //今日充值金额
 func today_charge_statisitcs(o orm.Ormer) (float64, error) {
 	var maps []orm.Params
-	_, err := o.Raw("select sum(amt) as amt from wxchargeodr where status = 'yy' and payTime >=? and payTime <= ?", time.Now().Format("2006-01-02"), time.Now().Format("2006-01-02")+" 23:59:59").Values(&maps)
+	_, err := o.Raw("select sum(amt) as amt from wxchargeodr where status = 'aa' and payTime >=? and payTime <= ?", time.Now().Format("2006-01-02"), time.Now().Format("2006-01-02")+" 23:59:59").Values(&maps)
 	if err != nil {
 		return 0, err
 	} else {
@@ -242,11 +242,11 @@ func today_gift_statistics(o orm.Ormer) (int64, error) {
 
 //合计统计
 func total_statistics(o orm.Ormer) (int64, int64, int64, int64, float64, float64, int64, int64, error) {
-	timeBegin := sqltool.TimeToStr(time.Now(), "yyyy-MM-dd") + "00:00:00"
-	timeEnd := sqltool.TimeToStr(time.Now(), "yyyy-MM-dd") + "23:59:59"
+	timeBegin := sqltool.TimeToStr(time.Now(), "yyyy-MM-dd") + " 00:00:00"
+	timeEnd := sqltool.TimeToStr(time.Now(), "yyyy-MM-dd") + " 23:59:59"
 
 	var maps []orm.Params
-	_, err := o.Raw("select * from (select count(1) as total_subscribe from wxsubscribe where (status='na' or status='aa') and subscribed='y') as aa,(select count(1) as today_subscribe from wxsubscribe where (status='na' or status='aa') and subscribed='y' and wxSubscribeTime >=? and wxSubscribeTime <=?) as bb,(select count(1) as total_bind from wxsubscribe where status='aa' and subscribed='y') as cc,(select count(1) as today_bind from wxsubscribe where status='aa' and subscribed='y' and BindDate >=? and BindDate <=?) as dd,(select sum(amt) as total_amt from wxchargeodr where status = 'yy') as ee,(select sum(amt) as today_amt from wxchargeodr where status = 'yy' and payTime >=? and payTime <=?) as ff,(select count(1) as total_gift from vipgiftexch where status='aa') as gg,(select count(1) as today_gift from vipgiftexch where status='aa' and createDate >=? and createDate <=?) as hh", timeBegin, timeEnd, timeBegin, timeEnd, timeBegin, timeEnd, timeBegin, timeEnd).Values(&maps)
+	_, err := o.Raw("select * from (select count(1) as total_subscribe from wxsubscribe where (status='na' or status='aa') and subscribed='y') as aa,(select count(1) as today_subscribe from wxsubscribe where (status='na' or status='aa') and subscribed='y' and wxSubscribeTime >=? and wxSubscribeTime <=?) as bb,(select count(1) as total_bind from wxsubscribe where status='aa' and subscribed='y') as cc,(select count(1) as today_bind from wxsubscribe where status='aa' and subscribed='y' and BindDate >=? and BindDate <=?) as dd,(select sum(amt) as total_amt from wxchargeodr where status = 'aa') as ee,(select sum(amt) as today_amt from wxchargeodr where status = 'aa' and payTime >=? and payTime <=?) as ff,(select count(1) as total_gift from vipgiftexch where status='aa') as gg,(select count(1) as today_gift from vipgiftexch where status='aa' and createDate >=? and createDate <=?) as hh", timeBegin, timeEnd, timeBegin, timeEnd, timeBegin, timeEnd, timeBegin, timeEnd).Values(&maps)
 	if err != nil {
 		return 0, 0, 0, 0, 0, 0, 0, 0, err
 	}
@@ -255,8 +255,8 @@ func total_statistics(o orm.Ormer) (int64, int64, int64, int64, float64, float64
 
 //用户7日趋势图
 func user_chart_statistics(o orm.Ormer) ([]UserCharts, error) {
-	timeBegin := sqltool.TimeToStr(time.Now().Add(time.Hour*24*6*-1), "yyyy-MM-dd") + "00:00:00"
-	timeEnd := sqltool.TimeToStr(time.Now(), "yyyy-MM-dd") + "23:59:59"
+	timeBegin := sqltool.TimeToStr(time.Now().Add(time.Hour*24*6*-1), "yyyy-MM-dd") + " 00:00:00"
+	timeEnd := sqltool.TimeToStr(time.Now(), "yyyy-MM-dd") + " 23:59:59"
 
 	var newSubscribeMaps, newBindMaps, cancelSubscribeMaps []orm.Params
 	_, err := o.Raw("SELECT DATE(wxSubscribeTime) AS time, count(1) AS sum FROM wxsubscribe WHERE (STATUS = 'na' OR STATUS = 'aa') AND subscribed = 'y' and wxSubscribeTime>=? and wxSubscribeTime <=? GROUP BY DATE(wxSubscribeTime) ORDER BY time DESC LIMIT 0, 7;", timeBegin, timeEnd).Values(&newSubscribeMaps)
@@ -300,11 +300,11 @@ func user_chart_statistics(o orm.Ormer) ([]UserCharts, error) {
 
 //7日充值趋势图
 func charge_chart_statistics(o orm.Ormer) ([]ChargeCharts, error) {
-	timeBegin := sqltool.TimeToStr(time.Now().Add(time.Hour*24*6*-1), "yyyy-MM-dd") + "00:00:00"
-	timeEnd := sqltool.TimeToStr(time.Now(), "yyyy-MM-dd") + "23:59:59"
+	timeBegin := sqltool.TimeToStr(time.Now().Add(time.Hour*24*6*-1), "yyyy-MM-dd") + " 00:00:00"
+	timeEnd := sqltool.TimeToStr(time.Now(), "yyyy-MM-dd") + " 23:59:59"
 
 	var maps []orm.Params
-	_, err := o.Raw("SELECT DATE(payTime) as time, sum(amt) as sum, (SELECT sum(amt) FROM wxchargeodr a WHERE STATUS = 'yy' AND payPtf = 'Alipay' AND DATE(a.payTime) = DATE(wxchargeodr.payTime)) as alipayamt,	(SELECT sum(amt) FROM wxchargeodr a WHERE STATUS = 'yy' AND payPtf = 'WechatPay' AND DATE(a.payTime) = DATE(wxchargeodr.payTime)) as wechatpayamt	FROM wxchargeodr WHERE STATUS = 'yy' and NOT ISNULL(payTime) and payTime>=? and payTime <=?  GROUP BY DATE(payTime) ORDER BY time DESC LIMIT 0, 7;", timeBegin, timeEnd).Values(&maps)
+	_, err := o.Raw("SELECT DATE(payTime) as time, sum(amt) as sum, (SELECT sum(amt) FROM wxchargeodr a WHERE STATUS = 'aa' AND payPtf = 'Alipay' AND DATE(a.payTime) = DATE(wxchargeodr.payTime)) as alipayamt,	(SELECT sum(amt) FROM wxchargeodr a WHERE STATUS = 'aa' AND payPtf = 'WechatPay' AND DATE(a.payTime) = DATE(wxchargeodr.payTime)) as wechatpayamt	FROM wxchargeodr WHERE STATUS = 'aa' and NOT ISNULL(payTime) and payTime>=? and payTime <=?  GROUP BY DATE(payTime) ORDER BY time DESC LIMIT 0, 7;", timeBegin, timeEnd).Values(&maps)
 	if err != nil {
 		return nil, err
 	}
