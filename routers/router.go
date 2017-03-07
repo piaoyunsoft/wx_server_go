@@ -17,6 +17,8 @@ import (
 	"wx_server_go/controllers/web/v1/users"
 	"wx_server_go/controllers/web/v1/wx"
 
+	"wx_server_go/controllers/web/v1"
+
 	"github.com/astaxie/beego"
 )
 
@@ -37,6 +39,7 @@ func init() {
 		beego.NSNamespace("/sys", beego.NSInclude(&sys.SysController{})),
 		beego.NSNamespace("/module", beego.NSInclude(&sys.ModuleController{})),
 		beego.NSNamespace("/server", beego.NSInclude(&server.ServerController{})),
+		beego.NSNamespace("/statistics", beego.NSInclude(&v1.StatisticsController{})),
 	)
 	nsCom := beego.NewNamespace("/com",
 		beego.NSNamespace("/file", beego.NSInclude(&common.FileController{})),

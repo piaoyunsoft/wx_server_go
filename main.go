@@ -6,11 +6,6 @@ import (
 
 	_ "wx_server_go/routers"
 
-	"fmt"
-	"wx_server_go/models"
-
-	"time"
-
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/plugins/cors"
 )
@@ -20,11 +15,6 @@ func init() {
 }
 
 func main() {
-	fmt.Println(time.Now().UnixNano())
-	item, err := models.GetStatistics()
-	fmt.Println(fmt.Sprintf("%+v", item), err)
-	fmt.Println(time.Now().UnixNano())
-
 	if beego.BConfig.RunMode == "dev" {
 		beego.BConfig.WebConfig.DirectoryIndex = true
 		beego.BConfig.WebConfig.StaticDir["/swagger"] = "swagger"
