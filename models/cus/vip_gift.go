@@ -10,7 +10,6 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/zheng-ji/goSnowFlake"
 )
 
 //type Time time.Time
@@ -215,18 +214,13 @@ func GetPageVipGift(query map[string]string, page int, limit int) (total int64, 
 }
 
 func CreateVipGift(m *VipGift) error {
-	fmt.Println(m)
 	o := orm.NewOrm()
-	iw, err := goSnowFlake.NewIdWorker(1)
+	id, err := sqltool.NewId("vipgiftlist")
 	if err != nil {
 		utils.Error(err)
 		return err
-	}
-	if id, err := iw.NextId(); err != nil {
-		utils.Error(err)
-		return err
 	} else {
-		m.GiftCode = fmt.Sprintf("%d", id)
+		m.GiftCode = fmt.Sprintf("g%07d", id)
 		m.MakeDate = time.Now()
 		if _, err = o.Insert(m); err == nil {
 			return nil
@@ -235,6 +229,24 @@ func CreateVipGift(m *VipGift) error {
 			return err
 		}
 	}
+	//iw, err := goSnowFlake.NewIdWorker(1)
+	//if err != nil {
+	//	utils.Error(err)
+	//	return err
+	//}
+	//if id, err := iw.NextId(); err != nil {
+	//	utils.Error(err)
+	//	return err
+	//} else {
+	//	m.GiftCode = fmt.Sprintf("%d", id)
+	//	m.MakeDate = time.Now()
+	//	if _, err = o.Insert(m); err == nil {
+	//		return nil
+	//	} else {
+	//		utils.Error(err)
+	//		return err
+	//	}
+	//}
 }
 
 func UpdateVipGift(item *VipGift) error {

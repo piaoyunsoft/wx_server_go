@@ -40,6 +40,8 @@ func init() {
 		beego.NSNamespace("/module", beego.NSInclude(&sys.ModuleController{})),
 		beego.NSNamespace("/server", beego.NSInclude(&server.ServerController{})),
 		beego.NSNamespace("/statistics", beego.NSInclude(&v1.StatisticsController{})),
+		beego.NSNamespace("/vipcls", beego.NSInclude(&v1.VipClsController{})),
+		beego.NSNamespace("/wxchargelist", beego.NSInclude(&v1.WxChargeListController{})),
 	)
 	nsCom := beego.NewNamespace("/com",
 		beego.NSNamespace("/file", beego.NSInclude(&common.FileController{})),
