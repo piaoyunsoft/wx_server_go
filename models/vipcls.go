@@ -31,6 +31,8 @@ func GetVipCls(query map[string]string) (res []Vipcls, err error) {
 			k = strings.Replace(k, ".", "__", -1)
 			if k == "status" {
 				qs = qs.Filter(k, v)
+			} else if k == "comid" {
+				qs = qs.Filter(k, v)
 			}
 		}
 		return qs

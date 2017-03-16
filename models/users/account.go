@@ -186,7 +186,40 @@ func CreateAccount(item *Account) error {
 }
 
 func UpdateAccount(item *Account) error {
-	return sqltool.Update(item)
+	o := orm.NewOrm()
+	params := make(orm.Params)
+	if item.Password != "" {
+		params["Password"] = item.Password
+	}
+	if item.Status != "" {
+		params["Status"] = item.Status
+	}
+	if item.Mobile != "" {
+		params["Mobile"] = item.Mobile
+	}
+	if item.UserId != "" {
+		params["UserId"] = item.UserId
+	}
+	if item.AccountName != "" {
+		params["AccountName"] = item.AccountName
+	}
+	if item.FromSys != "" {
+		params["FromSys"] = item.FromSys
+	}
+	if item.FromDeptId != "" {
+		params["FromDeptId"] = item.FromDeptId
+	}
+	if item.Remark != "" {
+		params["Remark"] = item.Remark
+	}
+	if !item.VldDtm.IsZero() {
+		params["vldDtm"] = item.VldDtm
+	}
+	_, err := o.QueryTable("account").Filter("Unicode", item.Unicode).Update(params)
+	if err != nil {
+		utils.Error(err)
+	}
+	return err
 }
 
 func DelAccount(unicode string) error {

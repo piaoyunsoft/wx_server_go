@@ -14,7 +14,7 @@ func (this *VipClsController) GetValid() {
 	query := make(map[string]string)
 
 	query["status"] = "aa"
-
+	query["comid"] = CusId
 	if rs, err := models.GetVipCls(query); err == nil {
 		this.Data["json"] = ResData(constants.Success, rs)
 	} else {

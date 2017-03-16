@@ -7,6 +7,7 @@ import (
 	"wx_server_go/utils/sqltool"
 
 	"github.com/astaxie/beego/orm"
+	"github.com/ddliao/go-lib/tool"
 	"github.com/zheng-ji/goSnowFlake"
 )
 
@@ -42,12 +43,37 @@ func init() {
 	orm.RegisterModel(new(Wxchargelist))
 }
 
-func CheckChargeName(name string, id string) bool {
+func CheckChargeName(name string, CusId string, id string) bool {
 	var query = make(map[string]string)
 	if id != "" {
 		query["id"] = id
 	}
-	query["name"] = name
+	query["checkname"] = name
+	query["comID"] = CusId
+	if count, result, err := GetPageCharge(query, 1, 2); err == nil {
+		if count > 1 {
+			return false
+		} else if count > 0 {
+			if result[0].Id == id {
+				return true
+			} else {
+				return false
+			}
+		} else {
+			return true
+		}
+	} else {
+		return false
+	}
+}
+
+func CheckChargeAmt(amt float64, CusId string, id string) bool {
+	var query = make(map[string]string)
+	if id != "" {
+		query["id"] = id
+	}
+	query["payAmt"] = tool.ToString(amt)
+	query["comID"] = CusId
 	if count, result, err := GetPageCharge(query, 1, 2); err == nil {
 		if count > 1 {
 			return false
@@ -81,10 +107,18 @@ func GetPageCharge(query map[string]string, page int, limit int) (total int64, r
 	for k, v := range query {
 		k = strings.Replace(k, ".", "__", -1)
 		if k == "name" {
-			_w += " and name like '%" + sqltool.SqlFormat(v) + "%'"
+			_w += " and a.name like '%" + sqltool.SqlFormat(v) + "%'"
+		} else if k == "comID" {
+			_w += " and a.comID = '" + sqltool.SqlFormat(v) + "'"
+		} else if k == "id" {
+			_w += " and a.id = '" + sqltool.SqlFormat(v) + "'"
+		} else if k == "checkname" {
+			_w += " and a.name = '" + sqltool.SqlFormat(v) + "'"
+		} else if k == "payAmt" {
+			_w += " and a.payAmt = " + sqltool.SqlFormat(v)
 		}
 	}
-	qb.Select("a.*", "b.cusName as comName", "c.itemname as vipClsName").From("wxchargelist as a").
+	qb.Select("a.*", "b.cusName as comName", "c.vipclsdes as vipClsName").From("wxchargelist as a").
 		LeftJoin("platcus as b").On("(b.cusID = a.comID)").
 		LeftJoin("vipcls as c").On("(c.comid = a.comID and c.vipclsid = a.vipclsid)").
 		Where(_w).
@@ -99,6 +133,7 @@ func GetPageCharge(query map[string]string, page int, limit int) (total int64, r
 }
 
 func CreateWxchargelist(m *Wxchargelist) error {
+	fmt.Println(m, 1111111111)
 	iw, err := goSnowFlake.NewIdWorker(1)
 	if err != nil {
 		utils.Error(err)

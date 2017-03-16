@@ -6,6 +6,9 @@ import (
 
 	"wx_server_go/utils"
 
+	"encoding/json"
+	"fmt"
+
 	"github.com/astaxie/beego"
 )
 
@@ -28,6 +31,10 @@ type PageData struct {
 }
 
 func (this *BaseController) Prepare() {
+	req := make(map[string]interface{})
+	this.ToJson(&req)
+	fmt.Println(fmt.Sprintf("url:%s body:%+v", this.Ctx.Request.RequestURI, req))
+
 	//	runmode := beego.AppConfig.DefaultString("runmode", "pro")
 	if !strings.Contains(this.Ctx.Request.RequestURI, "/web/v1/account/login") {
 		token := this.Ctx.Request.Header.Get("token")
@@ -44,6 +51,10 @@ func (this *BaseController) Prepare() {
 			CusId = cusid
 		}
 	}
+}
+
+func (this *BaseController) ToJson(i interface{}) error {
+	return json.Unmarshal(this.Ctx.Input.RequestBody, &i)
 }
 
 func ResBase(errCode constants.ErrCode, data interface{}, msg string) Response {

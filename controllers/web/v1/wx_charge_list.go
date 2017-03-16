@@ -42,6 +42,7 @@ func (this *WxChargeListController) GetPaging() {
 	if v := this.GetString("name"); v != "" {
 		query["name"] = v
 	}
+	query["comID"] = CusId
 
 	if total, rs, err := models.GetPageCharge(query, page, size); err == nil {
 		this.Data["json"] = ResData(constants.Success, PageData{Data: rs, Total: total})
@@ -51,7 +52,7 @@ func (this *WxChargeListController) GetPaging() {
 	this.ServeJSON()
 }
 
-// @router /gift [post]
+// @router / [post]
 func (this *WxChargeListController) Post() {
 	var v models.Wxchargelist
 	err := json.Unmarshal(this.Ctx.Input.RequestBody, &v)
@@ -88,6 +89,32 @@ func (this *WxChargeListController) Delete() {
 		} else {
 			this.Data["json"] = ResCode(constants.DBError)
 		}
+	}
+	this.ServeJSON()
+}
+
+// @router /checkChargeName [get]
+func (this *WxChargeListController) CheckChargeName() {
+	id := this.GetString("id")
+	name := this.GetString("name")
+
+	if flag := models.CheckChargeName(name, CusId, id); flag {
+		this.Data["json"] = ResData(constants.Success, "success")
+	} else {
+		this.Data["json"] = ResData(constants.Success, "fail")
+	}
+	this.ServeJSON()
+}
+
+// @router /checkChargeAmt [get]
+func (this *WxChargeListController) CheckChargeAmt() {
+	id := this.GetString("id")
+	amt, _ := this.GetFloat("amt", 0)
+
+	if flag := models.CheckChargeAmt(amt, CusId, id); flag {
+		this.Data["json"] = ResData(constants.Success, "success")
+	} else {
+		this.Data["json"] = ResData(constants.Success, "fail")
 	}
 	this.ServeJSON()
 }
