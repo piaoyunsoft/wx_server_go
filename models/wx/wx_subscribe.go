@@ -4,6 +4,8 @@ import (
 	"strings"
 	"time"
 
+	"wx_server_go/utils"
+
 	"github.com/astaxie/beego/orm"
 )
 
@@ -38,6 +40,7 @@ type Wxsubscribe struct {
 	Addr              string    `orm:"column(addr);size(255);null;" json:"addr"`
 	CreateDate        time.Time `orm:"column(createDate);" json:"createDate"`
 	ChangeDate        time.Time `orm:"column(changeDate);null;" json:"changeDate"`
+	ApplyBrief        string    `orm:"column(ApplyBrief);size(255);null;" json:"apply_brief"`
 }
 
 func init() {
@@ -58,6 +61,10 @@ func ReadWxSubscribeList(query map[string]string, page int64, limit int64) (tota
 			cond = cond.And("WxSubscribeTime__gte", v)
 		} else if k == "end" {
 			cond = cond.And("WxSubscribeTime__lte", v)
+		} else if k == "status" {
+			cond = cond.And(k, v)
+		} else if k == "key" {
+			cond = cond.AndCond(cond.And("mbrName__icontains", v).Or("mobile__icontains", v))
 		}
 	}
 	qs = qs.SetCond(cond)
@@ -70,4 +77,30 @@ func ReadWxSubscribeList(query map[string]string, page int64, limit int64) (tota
 	}
 
 	return 0, nil, err
+}
+
+func UpdateSubscribeByUID(item *Wxsubscribe) error {
+	o := orm.NewOrm()
+	params := make(orm.Params)
+	if item.MbrId != "" {
+		params["mbrId"] = item.MbrId
+	}
+	_, err := o.QueryTable("wxsubscribe").Filter("uid", item.Uid).Update(params)
+	if err != nil {
+		utils.Error(err)
+	}
+	return err
+}
+
+func BindCardByUID(item *Wxsubscribe) error {
+	o := orm.NewOrm()
+	params := make(orm.Params)
+	params["status"] = "aa"
+	params["BindWay"] = "后台绑定"
+	params["BindDate"] = time.Now()
+	_, err := o.QueryTable("wxsubscribe").Filter("uid", item.Uid).Update(params)
+	if err != nil {
+		utils.Error(err)
+	}
+	return err
 }
