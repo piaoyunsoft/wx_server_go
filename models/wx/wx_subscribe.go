@@ -6,7 +6,16 @@ import (
 
 	"wx_server_go/utils"
 
+	"io/ioutil"
+	"net/http"
+
+	"encoding/json"
+
+	"errors"
+
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/ddliao/go-lib/tool"
 )
 
 type Wxsubscribe struct {
@@ -92,15 +101,91 @@ func UpdateSubscribeByUID(item *Wxsubscribe) error {
 	return err
 }
 
-func BindCardByUID(item *Wxsubscribe) error {
+type SendMsgModel struct {
+	ClientId     string `json:"clientId"`
+	Timestamp    int64  `json:"timestamp"`
+	Sign         string `json:"sign"`
+	MbrId        string `json:"mbrId"`
+	MbrOwner     string `json:"mbrOwner"`
+	TplCode      string `json:"tplCode"`
+	FormattedMsg string `json:"formattedMsg"`
+}
+
+type TplMsg_OPENTM405904851 struct {
+	First    string `json:"first"`
+	Keyword1 string `json:"keyword1"`
+	Keyword2 string `json:"keyword2"`
+	Remark   string `json:"remark"`
+}
+
+func BindCardByUID(item *Wxsubscribe) (string, error) {
 	o := orm.NewOrm()
+	filter := new(Wxsubscribe)
+	filter.Uid = item.Uid
+	err := o.Read(filter)
+	if err != nil {
+		utils.Error(err)
+	}
+
+	serverAddress := beego.AppConfig.String("serveraddr")
+	url := serverAddress + "wxopenapi/CheckMbrID?mbrID=" + filter.MbrId
+	resp, err := http.Get(url)
+	if err != nil {
+		utils.Error(err)
+		return "", err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		utils.Error(err)
+		return "", err
+	}
+	utils.Info("检查会员卡有效性结果：" + string(body))
+	if string(body) != "success" {
+		err = errors.New("会员卡号无效或已被绑定")
+		utils.Error(err)
+		return "会员卡号无效或已被绑定", nil
+	}
+
 	params := make(orm.Params)
 	params["status"] = "aa"
 	params["BindWay"] = "后台绑定"
 	params["BindDate"] = time.Now()
-	_, err := o.QueryTable("wxsubscribe").Filter("uid", item.Uid).Update(params)
+	_, err = o.QueryTable("wxsubscribe").Filter("uid", item.Uid).Update(params)
 	if err != nil {
 		utils.Error(err)
+		return "", err
 	}
-	return err
+
+	url = serverAddress + "wxopenapi/SendTplMsg"
+	tpl := new(TplMsg_OPENTM405904851)
+	tpl.First = "您好，会员卡绑定成功"
+	tpl.Keyword1 = filter.MbrId
+	tpl.Keyword2 = tool.TimeToStr(time.Now(), "yyyy年MM月dd日 HH时mm分")
+	tpl.Remark = "本通知由系统自动发送, 若有疑问, 请联系客服"
+	str, _ := json.Marshal(tpl)
+
+	msg := new(SendMsgModel)
+	msg.ClientId = "web"
+	msg.FormattedMsg = string(str)
+	msg.MbrId = filter.MbrId
+	msg.MbrOwner = filter.ComID
+	msg.Sign = ""
+	msg.Timestamp = time.Now().Unix()
+	msg.TplCode = "OPENTM405904851"
+	str, _ = json.Marshal(msg)
+	respMsg, err := http.Post(url, "application/json", strings.NewReader(string(str)))
+	if err != nil {
+		utils.Error(err)
+		return "", err
+	}
+
+	defer respMsg.Body.Close()
+	bodyMsg, err := ioutil.ReadAll(respMsg.Body)
+	if err != nil {
+		utils.Error(err)
+		return "", err
+	}
+	utils.Info("发送绑定成功消息结果：" + string(bodyMsg))
+	return "", err
 }

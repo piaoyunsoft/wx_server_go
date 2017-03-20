@@ -2,11 +2,18 @@ package wx
 
 import (
 	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"pt_server/utils"
 	"strings"
 	"wx_server_go/constants"
 	"wx_server_go/controllers/api"
 	. "wx_server_go/controllers/web/v1"
 	. "wx_server_go/models/wx"
+
+	"fmt"
+
+	"github.com/astaxie/beego"
 )
 
 type WxSubscribeController struct {
@@ -92,12 +99,41 @@ func (this *WxSubscribeController) Put() {
 // @router /bind [put]
 func (this *WxSubscribeController) BindCardByUID() {
 	var v Wxsubscribe
-	err := json.Unmarshal(this.Ctx.Input.RequestBody, &v)
+	json.Unmarshal(this.Ctx.Input.RequestBody, &v)
 	//	this.ParseForm(&v)
-	if err = BindCardByUID(&v); err == nil {
-		this.Data["json"] = v1.ResCode(constants.Success)
+	if rs, err := BindCardByUID(&v); err == nil {
+		this.Data["json"] = v1.ResData(constants.Success, rs)
 	} else {
 		this.Data["json"] = v1.ResCode(constants.DBError)
+	}
+	this.ServeJSON()
+}
+
+// @router /checkMbrid [get]
+func (this *WxSubscribeController) CheckMbrId() {
+	mbrID := this.GetString("mbrId")
+	serverAddress := beego.AppConfig.String("serveraddr")
+	url := serverAddress + "wxopenapi/CheckMbrID?mbrID=" + mbrID
+
+	resp, err := http.Get(url)
+	if err != nil {
+		utils.Error(err)
+		this.Data["json"] = v1.ResData(constants.Success, "fail")
+		return
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		utils.Error(err)
+		this.Data["json"] = v1.ResData(constants.Success, "fail")
+		return
+	}
+	utils.Info(fmt.Sprintf("url:%s rs:%s", url, string(body)))
+	if string(body) != "success" {
+		this.Data["json"] = v1.ResData(constants.Success, "fail")
+	} else {
+		this.Data["json"] = v1.ResData(constants.Success, "success")
 	}
 	this.ServeJSON()
 }
