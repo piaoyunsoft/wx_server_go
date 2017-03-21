@@ -13,6 +13,8 @@ import (
 
 	"errors"
 
+	"fmt"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"github.com/ddliao/go-lib/tool"
@@ -118,6 +120,11 @@ type TplMsg_OPENTM405904851 struct {
 	Remark   string `json:"remark"`
 }
 
+type UpdateOpenIDModel struct {
+	MbrID  string `json:"mbrID"`
+	OpenID string `json:"openID"`
+}
+
 func BindCardByUID(item *Wxsubscribe) (string, error) {
 	o := orm.NewOrm()
 	filter := new(Wxsubscribe)
@@ -127,24 +134,33 @@ func BindCardByUID(item *Wxsubscribe) (string, error) {
 		utils.Error(err)
 	}
 
+	//验证会员卡号是否有效
 	serverAddress := beego.AppConfig.String("serveraddr")
 	url := serverAddress + "wxopenapi/CheckMbrID?mbrID=" + filter.MbrId
-	resp, err := http.Get(url)
+	body, err := doGet(url)
 	if err != nil {
 		utils.Error(err)
 		return "", err
 	}
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		utils.Error(err)
-		return "", err
-	}
-	utils.Info("检查会员卡有效性结果：" + string(body))
 	if string(body) != "success" {
 		err = errors.New("会员卡号无效或已被绑定")
 		utils.Error(err)
 		return "会员卡号无效或已被绑定", nil
+	}
+	//更新商场库会员openid
+	url = serverAddress + "wxopenapi/UpdateOpenID"
+	uptOpenID := new(UpdateOpenIDModel)
+	uptOpenID.MbrID = filter.MbrId
+	uptOpenID.OpenID = filter.WxOpenId
+	_, err = doPost(url, uptOpenID)
+	if err != nil {
+		utils.Error(err)
+		return "", err
+	}
+	if string(body) != "success" {
+		err = errors.New("同步商场数据失败")
+		utils.Error(err)
+		return "同步商场数据失败", nil
 	}
 
 	params := make(orm.Params)
@@ -157,12 +173,11 @@ func BindCardByUID(item *Wxsubscribe) (string, error) {
 		return "", err
 	}
 
-	url = serverAddress + "wxopenapi/SendTplMsg"
 	tpl := new(TplMsg_OPENTM405904851)
 	tpl.First = "您好，会员卡绑定成功"
 	tpl.Keyword1 = filter.MbrId
-	tpl.Keyword2 = tool.TimeToStr(time.Now(), "yyyy年MM月dd日 HH时mm分")
-	tpl.Remark = "本通知由系统自动发送, 若有疑问, 请联系客服"
+	tpl.Keyword2 = tool.TimeToStr(time.Now(), "MM月dd日 HH时mm分")
+	tpl.Remark = "恭喜您成为天赐时代绿卡会员，自此您将获得我们为您提供的购物积分、积分换礼、特价通知、停车折价、免费杂志、周年庆受邀等服务"
 	str, _ := json.Marshal(tpl)
 
 	msg := new(SendMsgModel)
@@ -174,18 +189,46 @@ func BindCardByUID(item *Wxsubscribe) (string, error) {
 	msg.Timestamp = time.Now().Unix()
 	msg.TplCode = "OPENTM405904851"
 	str, _ = json.Marshal(msg)
-	respMsg, err := http.Post(url, "application/json", strings.NewReader(string(str)))
+
+	url = serverAddress + "wxopenapi/SendTplMsg"
+	_, err = doPost(url, msg)
 	if err != nil {
 		utils.Error(err)
 		return "", err
+	}
+	return "success", nil
+}
+
+func doPost(url string, i interface{}) ([]byte, error) {
+	str, _ := json.Marshal(i)
+	resp, err := http.Post(url, "application/json", strings.NewReader(string(str)))
+	if err != nil {
+		utils.Error(err)
+		return nil, err
 	}
 
-	defer respMsg.Body.Close()
-	bodyMsg, err := ioutil.ReadAll(respMsg.Body)
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		utils.Error(err)
-		return "", err
+		return nil, err
 	}
-	utils.Info("发送绑定成功消息结果：" + string(bodyMsg))
-	return "", err
+	utils.Info(fmt.Sprintf("url:%s,result:%s", url, string(body)))
+	return body, nil
+}
+
+func doGet(url string) ([]byte, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		utils.Error(err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		utils.Error(err)
+		return nil, err
+	}
+	utils.Info(fmt.Sprintf("url:%s,result:%s", url, string(body)))
+	return body, nil
 }
