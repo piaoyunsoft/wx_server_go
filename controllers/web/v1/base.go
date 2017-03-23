@@ -76,6 +76,7 @@ func ResBase(errCode constants.ErrCode, data interface{}, msg string) Response {
 		//		}
 	}
 
+	fmt.Println(fmt.Sprintf("errCode:%d data:%+v msg:%s", errCode, data, msg))
 	res := Response{ErrCode: errCode, Data: data, ErrMsg: msg}
 	return res
 }
@@ -105,4 +106,15 @@ func ResData(errCode constants.ErrCode, data interface{}) Response {
 func ResCode(errCode constants.ErrCode) Response {
 	res := ResData(errCode, nil)
 	return res
+}
+
+func (this *BaseController) ToIntEx(s string, defaultVlu ...int) int {
+	if rs, err := this.GetInt(s); err == nil {
+		return rs
+	} else if len(defaultVlu) > 0 {
+		return defaultVlu[0]
+	} else {
+		return 0
+	}
+
 }

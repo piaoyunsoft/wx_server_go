@@ -1,4 +1,4 @@
 package cus
 
-type PlatCusInd struct {
-}
+//type PlatCusInd struct {
+//}

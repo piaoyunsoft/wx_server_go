@@ -1,4 +1,4 @@
 package cus
 
-type WxTplMsgCusTpl struct {
-}
+//type WxTplMsgCusTpl struct {
+//}

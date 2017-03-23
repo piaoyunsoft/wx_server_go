@@ -1,4 +1,4 @@
 package cus
 
-type PlatCusWX struct {
-}
+//type PlatCusWX struct {
+//}

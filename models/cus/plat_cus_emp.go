@@ -1,4 +1,5 @@
 package cus
 
-type PlatCusEmp struct {
-}
+//
+//type PlatCusEmp struct {
+//}
