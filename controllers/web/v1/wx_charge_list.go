@@ -107,6 +107,7 @@ func (this *WxChargeListController) CheckChargeAmt() {
 	req := new(models.SeaWxchargelist)
 	req.Id = this.GetString("id")
 	req.Payamt = this.GetString("amt")
+	req.Vipclsid = this.GetString("vipclsid")
 	req.Comid = CusId
 
 	if err := req.CheckChargeAmt(); err == nil {

@@ -4,6 +4,8 @@ import (
 	"errors"
 	"wx_server_go/utils"
 
+	"fmt"
+
 	"github.com/ddliao/go-lib/tool"
 	"github.com/go-xorm/xorm"
 )
@@ -32,10 +34,11 @@ type ReqWxchargelist struct {
 
 type SeaWxchargelist struct {
 	SeaModel
-	Id     string `json:"id"`
-	Name   string `json:"name"`
-	Comid  string `json:"com_id"`
-	Payamt string `json:"pay_amt"`
+	Id       string `json:"id"`
+	Name     string `json:"name"`
+	Comid    string `json:"com_id"`
+	Payamt   string `json:"pay_amt"`
+	Vipclsid string `json:"vipclsid"`
 }
 
 type WxchargelistModel struct {
@@ -52,7 +55,7 @@ type WxchargelistModel struct {
 }
 
 func (this *SeaWxchargelist) where() *xorm.Session {
-	session := x.NewSession().Table("vipgiftlist").Alias("a")
+	session := x.NewSession().Table("wxchargelist").Alias("a")
 	if this.Id != "" {
 		session.And("a.id = ?", this.Id)
 	}
@@ -73,7 +76,7 @@ func (this *SeaWxchargelist) where() *xorm.Session {
 
 func (this *SeaWxchargelist) GetOne() (*WxchargelistModel, error) {
 	item := new(WxchargelistModel)
-	if err := this.getOneSel(this.where, "a.*, b.cusName as com_name, c.vipclsdes as vip_cls_name", &item); err != nil {
+	if err := this.getOneSel(this.where, "a.*, b.cusName as com_name, c.vipclsdes as vip_cls_name", item); err != nil {
 		return nil, err
 	} else {
 		return item, nil
@@ -115,9 +118,9 @@ func (this *SeaWxchargelist) CheckChargeAmt() error {
 	var err error = nil
 	item := new(Wxchargelist)
 	if this.Id != "" {
-		count, err = x.Where("payAmt=? and id<>? and comID=?", this.Payamt, this.Id, this.Comid).Count(item)
+		count, err = x.Where("payAmt=? and id<>? and comID=? and vipclsid=?", this.Payamt, this.Id, this.Comid, this.Vipclsid).Count(item)
 	} else {
-		count, err = x.Where("payAmt=? and comID=?", this.Payamt, this.Comid).Count(item)
+		count, err = x.Where("payAmt=? and comID=? and vipclsid=?", this.Payamt, this.Comid, this.Vipclsid).Count(item)
 	}
 	if err != nil {
 		utils.Error(err)
@@ -141,7 +144,8 @@ func (this *ReqWxchargelist) Insert() error {
 
 func (this *ReqWxchargelist) UpdateById() error {
 	item := Wxchargelist(*this)
-	_, err := x.Omit("makeDate").ID(item.Id).Update(item)
+	fmt.Println(fmt.Sprintf("%+v", item))
+	_, err := x.ID(item.Id).Update(item)
 	utils.Error(err)
 	return err
 }

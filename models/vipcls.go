@@ -30,14 +30,14 @@ type VipclsModel struct {
 }
 
 func (this *SeaVipcls) where() *xorm.Session {
-	session := x.NewSession().Table("vipgiftlist").Alias("a")
+	session := x.NewSession().Table("vipcls").Alias("a")
 	if this.Comid != "" {
 		session.And("a.comid = ?", this.Comid)
 	}
 	if this.Status != "" {
 		session.And("a.status = ?", this.Status)
 	}
-	return session.Desc("a.createDate")
+	return session
 }
 
 func (this *SeaVipcls) GetAll() ([]VipclsModel, error) {

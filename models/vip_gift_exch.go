@@ -75,7 +75,7 @@ type VipgiftexchModel struct {
 }
 
 func (this *SeaVipgiftexch) where() *xorm.Session {
-	session := x.NewSession().Table("vipgiftlist").Alias("a")
+	session := x.NewSession().Table("vipgiftexch").Alias("a")
 	if this.Giftname != "" {
 		session.And("a.giftName like ?", toLike(this.Giftname))
 	}

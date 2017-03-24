@@ -74,7 +74,7 @@ func (this *SeaWxchargeodr) where() *xorm.Session {
 
 func (this *SeaWxchargeodr) GetPaging() ([]WxchargeodrModel, int64, error) {
 	items := make([]WxchargeodrModel, 0, this.PageSize)
-	if total, err := this.getPagingSel(this.where, "a.*, wxsubscribe.wxNickName as nickName", new(WxchargeodrModel), &items); err == nil {
+	if total, err := this.getPagingSel(this.where, "a.*, wxsubscribe.wxNickName as nick_name", new(WxchargeodrModel), &items); err == nil {
 		return items, total, nil
 	} else {
 		return nil, 0, err

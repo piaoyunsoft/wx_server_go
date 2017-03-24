@@ -9,6 +9,8 @@ import (
 	"wx_server_go/utils"
 	"wx_server_go/utils/sqltool"
 
+	"fmt"
+
 	"github.com/go-xorm/xorm"
 )
 
@@ -48,6 +50,8 @@ type SeaAccount struct {
 	Mobile_Full      string `json:"mobile_full"`
 	Accountname_Full string `json:"accountName_full"`
 	Key              string `json:"username"`
+	NewPwd           string `json:"new_pwd"`
+	Old_Pwd          string `json:"old_pwd"`
 }
 
 type AccountModel struct {
@@ -193,4 +197,23 @@ func (this *ReqAccount) ResetPwd() error {
 	_, err := x.Omit("vldDtm").ID(item.Unicode).Update(item)
 	utils.Error(err)
 	return err
+}
+
+func (this *SeaAccount) ChangePwd() (string, error) {
+	fmt.Println(fmt.Sprintf("%+v", this))
+	item := new(Account)
+	count, err := x.Where("Unicode=? and Password=?", this.Unicode, this.Old_Pwd).Count(item)
+	if err != nil {
+		utils.Error(err)
+		return "", err
+	}
+	if count <= 0 {
+		err = errors.New("invalid user")
+		utils.Error(err)
+		return "原密码错误", nil
+	}
+	req := new(ReqAccount)
+	req.Unicode = this.Unicode
+	req.Password = this.NewPwd
+	return "", req.UpdateById()
 }

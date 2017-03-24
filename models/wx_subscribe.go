@@ -192,7 +192,7 @@ type UpdateOpenIDModel struct {
 
 func (this *SeaWxsubscribe) BindCardByUID() (string, error) {
 	item := new(Wxsubscribe)
-	if err := this.getOne(this.where, &item); err != nil {
+	if err := this.getOne(this.where, item); err != nil {
 		utils.Error(err)
 		return "", err
 	}

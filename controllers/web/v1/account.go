@@ -142,3 +142,21 @@ func (this *AccountController) ResetPwd() {
 	}
 	this.ServeJSON()
 }
+
+// @router /changePwd [post]
+func (this *AccountController) ChangePwd() {
+	req := new(models.SeaAccount)
+	json.Unmarshal(this.Ctx.Input.RequestBody, &req)
+	req.Unicode = Userid
+	//	this.ParseForm(&v)
+	if msg, err := req.ChangePwd(); err == nil {
+		if msg == "" {
+			this.Data["json"] = ResCode(constants.Success)
+		} else {
+			this.Data["json"] = ResData(constants.Success, msg)
+		}
+	} else {
+		this.Data["json"] = ResCode(constants.DBError)
+	}
+	this.ServeJSON()
+}

@@ -42,8 +42,8 @@ func (this *WxSubscribeController) GetAll() {
 // @router /apply [get]
 func (this *WxSubscribeController) GetApplyCards() {
 	req := new(models.SeaWxsubscribe)
-	req.PageSize = this.ToIntEx("pageSize", 10)
-	req.PageIndex = this.ToIntEx("pageIndex", 1)
+	req.PageSize = this.ToIntEx("size", 10)
+	req.PageIndex = this.ToIntEx("page", 1)
 	req.Key = this.GetString("key")
 	req.Status = "np"
 
