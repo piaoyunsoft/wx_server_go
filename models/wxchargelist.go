@@ -137,6 +137,7 @@ func (this *SeaWxchargelist) CheckChargeAmt() error {
 func (this *ReqWxchargelist) Insert() error {
 	item := Wxchargelist(*this)
 	item.Id = tool.NewStrID()
+	item.Getrealamt = item.Payamt
 	_, err := x.Insert(item)
 	utils.Error(err)
 	return err
@@ -145,6 +146,7 @@ func (this *ReqWxchargelist) Insert() error {
 func (this *ReqWxchargelist) UpdateById() error {
 	item := Wxchargelist(*this)
 	fmt.Println(fmt.Sprintf("%+v", item))
+	item.Getrealamt = item.Payamt
 	_, err := x.ID(item.Id).Update(item)
 	utils.Error(err)
 	return err
