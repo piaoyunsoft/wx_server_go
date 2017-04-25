@@ -1,0 +1,3 @@
+net stop wx_server_go_windows_amd64
+sc delete wx_server_go_windows_amd64
+pause

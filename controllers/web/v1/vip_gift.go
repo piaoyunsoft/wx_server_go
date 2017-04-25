@@ -125,11 +125,25 @@ func (this *VipController) GetVipGiftExch() {
 	req.Begin = this.GetString("begin")
 	req.End = this.GetString("end")
 	req.Giftname = this.GetString("giftName")
+	req.Getway = this.GetString("getway")
+	req.Mailstatus = this.GetString("mailstatus")
 
 	if rs, total, err := req.GetPaging(); err == nil {
 		this.Data["json"] = ResData(constants.Success, PageData{Data: rs, Total: total})
 	} else {
 		this.Data["json"] = ResData(constants.DataNull, PageData{Data: rs, Total: total})
+	}
+	this.ServeJSON()
+}
+
+// @router /uptVipGiftExch [post]
+func (this *VipController) UpdateVipGiftExch() {
+	var v models.ReqVipgiftexch
+	err := json.Unmarshal(this.Ctx.Input.RequestBody, &v)
+	if err = v.UpdateById(); err == nil {
+		this.Data["json"] = ResCode(constants.Success)
+	} else {
+		this.Data["json"] = ResCode(constants.DBError)
 	}
 	this.ServeJSON()
 }

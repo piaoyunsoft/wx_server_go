@@ -1,6 +1,7 @@
 package models
 
 import (
+	"pt_server/utils"
 	"time"
 
 	"github.com/go-xorm/xorm"
@@ -23,6 +24,10 @@ type Vipgiftexch struct {
 	Mailstatus    string    `xorm:"CHAR(2)"`
 	Createdate    time.Time `xorm:"DATETIME"`
 	Changedate    time.Time `xorm:"DATETIME"`
+	Dlvbllno      string    `xorm:"VARCHAR(64)"`
+	Dlvcontent    string    `xorm:"VARCHAR(255)"`
+	Dlvdate       time.Time `xorm:"DATETIME"`
+	Dlvpsn        string    `xorm:"VARCHAR(64)"`
 }
 
 type ReqVipgiftexch struct {
@@ -42,14 +47,20 @@ type ReqVipgiftexch struct {
 	Mailstatus    string    `json:"mailStatus"`
 	Createdate    time.Time `json:"createDate"`
 	Changedate    time.Time `json:"changeDate"`
+	Dlvbllno      string    `json:"dlvbllno"`
+	Dlvcontent    string    `json:"dlvcontent"`
+	Dlvdate       time.Time `json:"dlvdate"`
+	Dlvpsn        string    `json:"dlvpsn"`
 }
 
 type SeaVipgiftexch struct {
 	SeaModel
-	Giftname string `json:"giftName"`
-	Begin    string `json:"begin"`
-	End      string `json:"end"`
-	Mbr      string `json:"mbr"`
+	Giftname   string `json:"giftName"`
+	Begin      string `json:"begin"`
+	End        string `json:"end"`
+	Mbr        string `json:"mbr"`
+	Getway     string `json:"getway"`
+	Mailstatus string `json:"mailstatus"`
 }
 
 type VipgiftexchModel struct {
@@ -69,6 +80,10 @@ type VipgiftexchModel struct {
 	Mailstatus     string    `json:"mailStatus"`
 	Createdate     time.Time `json:"createDate"`
 	Changedate     time.Time `json:"changeDate"`
+	Dlvbllno       string    `json:"dlvbllno"`
+	Dlvcontent     string    `json:"dlvcontent"`
+	Dlvdate        time.Time `json:"dlvdate"`
+	Dlvpsn         string    `json:"dlvpsn"`
 	NickName       string    `json:"nickName"`
 	GetWayName     string    `json:"getWayName"`
 	MailStatusName string    `json:"mailStatusName"`
@@ -88,6 +103,12 @@ func (this *SeaVipgiftexch) where() *xorm.Session {
 	if this.Mbr != "" {
 		session.And("b.wxNickName like ?", toLike(this.Mbr))
 	}
+	if this.Getway != "" {
+		session.And("a.getWay = ?", this.Getway)
+	}
+	if this.Mailstatus != "" {
+		session.And("a.mailStatus = ?", this.Mailstatus)
+	}
 	return session.
 		Join("LEFT", []string{"wxsubscribe", "b"}, "b.wxOpenId = a.wxOpenID and b.comID = a.comId").
 		Join("LEFT", []string{"dictitem", "c"}, "c.itemcode = a.getWay and c.dictcode = '002'").
@@ -102,4 +123,12 @@ func (this *SeaVipgiftexch) GetPaging() ([]VipgiftexchModel, int64, error) {
 	} else {
 		return items, total, nil
 	}
+}
+
+func (this *ReqVipgiftexch) UpdateById() error {
+	item := Vipgiftexch(*this)
+	item.Changedate = time.Now()
+	_, err := x.Omit("createDate").ID(item.Exchid).Update(item)
+	utils.Error(err)
+	return err
 }

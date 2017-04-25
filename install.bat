@@ -1,0 +1,3 @@
+nssm install wx_server_go_windows_amd64 %cd%\wx_server_go_windows_amd64.exe
+net start wx_server_go_windows_amd64
+pause

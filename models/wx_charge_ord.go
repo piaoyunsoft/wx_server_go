@@ -69,7 +69,7 @@ func (this *SeaWxchargeodr) where() *xorm.Session {
 	if this.Status != "" {
 		session.And("a.status = ?", this.Status)
 	}
-	return session.Join("LEFT", "wxsubscribe", "wxsubscribe.wxOpenId = a.wxOpenID and wxsubscribe.comID=a.comId")
+	return session.Join("LEFT", "wxsubscribe", "wxsubscribe.wxOpenId = a.wxOpenID and wxsubscribe.comID=a.comId").Desc("a.createDate")
 }
 
 func (this *SeaWxchargeodr) GetPaging() ([]WxchargeodrModel, int64, error) {
