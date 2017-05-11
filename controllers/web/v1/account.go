@@ -147,7 +147,7 @@ func (this *AccountController) ResetPwd() {
 func (this *AccountController) ChangePwd() {
 	req := new(models.SeaAccount)
 	json.Unmarshal(this.Ctx.Input.RequestBody, &req)
-	req.Unicode = Userid
+	req.Unicode = this.UserId
 	//	this.ParseForm(&v)
 	if msg, err := req.ChangePwd(); err == nil {
 		if msg == "" {

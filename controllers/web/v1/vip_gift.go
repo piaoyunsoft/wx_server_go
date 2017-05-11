@@ -71,8 +71,8 @@ func (this *VipController) Post() {
 	var v models.ReqVipgiftlist
 	err := json.Unmarshal(this.Ctx.Input.RequestBody, &v)
 	//	this.ParseForm(&v)
-	v.Cusid = CusId
-	v.Makeperson = Userid
+	v.Cusid = this.CusId
+	v.Makeperson = this.UserId
 	fmt.Println(fmt.Sprintf("%+v", v))
 	if err = v.Insert(); err == nil {
 		this.Data["json"] = ResCode(constants.Success)
@@ -87,7 +87,7 @@ func (this *VipController) Put() {
 	var v models.ReqVipgiftlist
 	err := json.Unmarshal(this.Ctx.Input.RequestBody, &v)
 	//	this.ParseForm(&v)
-	v.Auditperson = Userid
+	v.Auditperson = this.UserId
 	if err = v.UpdateById(); err == nil {
 		this.Data["json"] = ResCode(constants.Success)
 	} else {

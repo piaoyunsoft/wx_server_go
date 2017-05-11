@@ -13,7 +13,7 @@ type VipClsController struct {
 func (this *VipClsController) GetValid() {
 	req := new(models.SeaVipcls)
 	req.Status = "aa"
-	req.Comid = CusId
+	req.Comid = this.CusId
 
 	if rs, err := req.GetAll(); err == nil {
 		this.Data["json"] = ResData(constants.Success, rs)

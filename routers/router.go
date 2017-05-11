@@ -32,6 +32,7 @@ func init() {
 		beego.NSNamespace("/statistics", beego.NSInclude(&v1.StatisticsController{})),
 		beego.NSNamespace("/vipcls", beego.NSInclude(&v1.VipClsController{})),
 		beego.NSNamespace("/wxchargelist", beego.NSInclude(&v1.WxChargeListController{})),
+		beego.NSNamespace("/coupon", beego.NSInclude(&v1.CouponController{})),
 
 		//beego.NSNamespace("/park", beego.NSInclude(&park.ParkController{})),
 		//beego.NSNamespace("/region", beego.NSInclude(&park.RegionController{})),

@@ -24,7 +24,7 @@ func (this *CusController) GetAll() {
 // @router /my [get]
 func (this *CusController) GetMyCus() {
 	req := new(models.SeaPlatcus)
-	req.Cusid = CusId
+	req.Cusid = this.CusId
 
 	if rs, err := req.GetAll(); err == nil {
 		this.Data["json"] = ResData(constants.Success, rs)

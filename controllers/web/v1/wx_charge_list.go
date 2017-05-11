@@ -34,7 +34,7 @@ func (this *WxChargeListController) GetPaging() {
 	req.PageSize = this.ToIntEx("size", 10)
 	req.PageIndex = this.ToIntEx("page", 1)
 	req.Name = this.GetString("name")
-	req.Comid = CusId
+	req.Comid = this.CusId
 
 	if rs, total, err := req.GetPaging(); err == nil {
 		this.Data["json"] = ResData(constants.Success, PageData{Data: rs, Total: total})
@@ -48,7 +48,7 @@ func (this *WxChargeListController) GetPaging() {
 func (this *WxChargeListController) Post() {
 	req := new(models.ReqWxchargelist)
 	err := json.Unmarshal(this.Ctx.Input.RequestBody, &req)
-	req.Comid = CusId
+	req.Comid = this.CusId
 	if err = req.Insert(); err == nil {
 		this.Data["json"] = ResCode(constants.Success)
 	} else {
@@ -92,7 +92,7 @@ func (this *WxChargeListController) CheckChargeName() {
 	req := new(models.SeaWxchargelist)
 	req.Id = this.GetString("id")
 	req.Name = this.GetString("name")
-	req.Comid = CusId
+	req.Comid = this.CusId
 
 	if err := req.CheckChargeName(); err == nil {
 		this.Data["json"] = ResData(constants.Success, "success")
@@ -108,7 +108,7 @@ func (this *WxChargeListController) CheckChargeAmt() {
 	req.Id = this.GetString("id")
 	req.Payamt = this.GetString("amt")
 	req.Vipclsid = this.GetString("vipclsid")
-	req.Comid = CusId
+	req.Comid = this.CusId
 
 	if err := req.CheckChargeAmt(); err == nil {
 		this.Data["json"] = ResData(constants.Success, "success")
