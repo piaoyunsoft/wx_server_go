@@ -12,13 +12,11 @@ type CouponController struct {
 // @router /coupon [get]
 func (this *CouponController) GetCoupon() {
 	req := new(models.SeaCoupon)
-	req.PageSize = this.ToIntEx("size", 10)
-	req.PageIndex = this.ToIntEx("page", 1)
 	req.Title = this.GetString("title")
 	req.ComID = this.CusId
 
-	if total, rs, err := req.GetCoupon(); err == nil {
-		this.Data["json"] = ResData(constants.Success, PageData{Data: rs, Total: total})
+	if rs, err := req.GetCoupon(); err == nil {
+		this.Data["json"] = ResData(constants.Success, rs)
 	} else {
 		this.Data["json"] = ResData(constants.DataNull, nil)
 	}

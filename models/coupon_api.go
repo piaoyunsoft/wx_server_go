@@ -5,16 +5,12 @@ import (
 	"io/ioutil"
 	"net/http"
 	"pt_server/utils"
-	"time"
-
-	"strconv"
 
 	"github.com/astaxie/beego"
 	"github.com/pquerna/ffjson/ffjson"
 )
 
 type SeaCoupon struct {
-	SeaModel
 	ComID string
 	Title string `json:"title"`
 }
@@ -46,41 +42,44 @@ type SeaCouponItem struct {
 }
 
 type CouponItem struct {
-	ItemID     string    `json:"itemID"`
-	CouponID   string    `json:"couponID"`
-	GetValue   float32   `json:"getValue"`
-	GetDate    time.Time `json:"getDate"`
-	GetVipcdid string    `json:"getVipcdid"`
-	FromTb     string    `json:"fromTb"`
-	FromPK     string    `json:"fromPK"`
-	Status     string    `json:"status"`
+	ItemID     string  `json:"itemID"`
+	CouponID   string  `json:"couponID"`
+	GetValue   float32 `json:"getValue"`
+	GetDate    string  `json:"getDate"`
+	GetVipcdid string  `json:"getVipcdid"`
+	FromTb     string  `json:"fromTb"`
+	FromPK     string  `json:"fromPK"`
+	Status     string  `json:"status"`
+	UsedDate   string  `json:"usedDate"`
+	UsedLinkTb string  `json:"usedLinkTb"`
+	UsedLinkPK string  `json:"usedLinkPK"`
+	MbrName    string  `json:"mbrName"`
 }
 
-func (this *SeaCoupon) GetCoupon() (int64, []Coupon, error) {
+func (this *SeaCoupon) GetCoupon() ([]Coupon, error) {
 	serverAddress := beego.AppConfig.String("serveraddr")
-	url := serverAddress + "wxopenapi/GetCoupons?title=" + this.Title + "&pageSize=" + strconv.Itoa(this.PageSize) + "&pageIndex=" + strconv.Itoa(this.PageIndex)
-
+	url := serverAddress + "wxopenapi/GetCoupons?title=" + this.Title + "&comID=" + this.ComID
 	resp, err := http.Get(url)
 	if err != nil {
 		utils.Error(err)
-		return 0, nil, err
+		return nil, err
 	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		utils.Error(err)
-		return 0, nil, err
+		return nil, err
 	}
 
-	rsModel := new(CouponModal)
+	rsModel := make([]Coupon, 0)
 	err = ffjson.Unmarshal(body, &rsModel)
 	if err != nil {
 		utils.Error(err)
-		return 0, nil, err
+		return nil, err
 	}
 	utils.Info(fmt.Sprintf("url:%s rs:%+v", url, rsModel))
-	return rsModel.Total, rsModel.Data, nil
+	return rsModel, nil
 }
 
 func (this *SeaCouponItem) GetCouponItem() ([]CouponItem, error) {
