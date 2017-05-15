@@ -6,6 +6,8 @@ import (
 	"wx_server_go/utils"
 
 	"wx_server_go/models"
+
+	"github.com/ddliao/go-lib/slog"
 )
 
 type AccountController struct {
@@ -78,7 +80,7 @@ func (this *AccountController) Login() {
 			loginRs["token"] = token
 			this.Data["json"] = ResData(constants.Success, loginRs)
 		} else {
-			utils.Error(err)
+			slog.Error(err)
 			this.Data["json"] = ResCode(constants.LoginFail)
 		}
 	} else {

@@ -10,6 +10,7 @@ import (
 	"fmt"
 
 	"github.com/astaxie/beego"
+	"github.com/ddliao/go-lib/slog"
 )
 
 type BaseController struct {
@@ -32,7 +33,7 @@ type PageData struct {
 func (this *BaseController) Prepare() {
 	req := make(map[string]interface{})
 	this.ToJson(&req)
-	fmt.Println(fmt.Sprintf("url:%s body:%+v", this.Ctx.Request.RequestURI, req))
+	slog.Trace(fmt.Sprintf("url:%s body:%+v", this.Ctx.Request.RequestURI, req))
 
 	//	runmode := beego.AppConfig.DefaultString("runmode", "pro")
 	if !strings.Contains(this.Ctx.Request.RequestURI, "/web/v1/account/login") {
@@ -75,7 +76,7 @@ func ResBase(errCode constants.ErrCode, data interface{}, msg string) Response {
 		//		}
 	}
 
-	fmt.Println(fmt.Sprintf("errCode:%d data:%+v msg:%s", errCode, data, msg))
+	slog.Trace(fmt.Sprintf("errCode:%d data:%+v msg:%s", errCode, data, msg))
 	res := Response{ErrCode: errCode, Data: data, ErrMsg: msg}
 	return res
 }

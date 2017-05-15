@@ -1,9 +1,9 @@
 package models
 
 import (
-	"pt_server/utils"
 	"time"
 
+	"github.com/ddliao/go-lib/slog"
 	"github.com/go-xorm/xorm"
 )
 
@@ -129,6 +129,6 @@ func (this *ReqVipgiftexch) UpdateById() error {
 	item := Vipgiftexch(*this)
 	item.Changedate = time.Now()
 	_, err := x.Omit("createDate").ID(item.Exchid).Update(item)
-	utils.Error(err)
+	slog.Error(err)
 	return err
 }

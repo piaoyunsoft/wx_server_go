@@ -6,14 +6,13 @@ import (
 
 	"errors"
 
-	"pt_server/utils"
-
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"strings"
 
 	"github.com/astaxie/beego"
+	"github.com/ddliao/go-lib/slog"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
@@ -56,7 +55,7 @@ func init() {
 	LoadConfig()
 
 	err := NewEngine()
-	fmt.Println(err)
+	slog.Error(err)
 }
 
 func LoadConfig() {
@@ -69,7 +68,7 @@ func LoadConfig() {
 
 func getEngine() (*xorm.Engine, error) {
 	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true", DbCfg.User, DbCfg.Pwd, DbCfg.Host, DbCfg.Port, DbCfg.Db)
-	fmt.Println(connStr)
+	slog.Info(connStr)
 	return xorm.NewEngine("mysql", connStr)
 }
 
@@ -125,11 +124,11 @@ func (this *SeaModel) getPagingSel(session getSession, sel string, bean interfac
 		if err == nil {
 			return total, nil
 		} else {
-			utils.Error(err)
+			slog.Error(err)
 			return 0, err
 		}
 	} else {
-		utils.Error(err)
+		slog.Error(err)
 		return 0, err
 	}
 }
@@ -143,11 +142,11 @@ func (this *SeaModel) getPaging(session getSession, bean interface{}, item inter
 		if err == nil {
 			return total, nil
 		} else {
-			utils.Error(err)
+			slog.Error(err)
 			return 0, err
 		}
 	} else {
-		utils.Error(err)
+		slog.Error(err)
 		return 0, err
 	}
 }
@@ -156,7 +155,7 @@ func (this *SeaModel) getAll(session getSession, item interface{}) error {
 	if err := session().Find(item); err == nil {
 		return nil
 	} else {
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	}
 }
@@ -167,7 +166,7 @@ func (this *SeaModel) getOne(session getSession, item interface{}) error {
 		return err
 	} else if !has {
 		err = errors.New("has no data")
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	} else {
 		return nil
@@ -177,11 +176,11 @@ func (this *SeaModel) getOne(session getSession, item interface{}) error {
 func (this *SeaModel) getOneSel(session getSession, sel string, item interface{}) error {
 	has, err := session().Select(sel).Get(item)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	} else if !has {
 		err = errors.New("has no data")
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	} else {
 		return nil
@@ -192,32 +191,32 @@ func doPost(url string, i interface{}) ([]byte, error) {
 	str, _ := json.Marshal(i)
 	resp, err := http.Post(url, "application/json", strings.NewReader(string(str)))
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return nil, err
 	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return nil, err
 	}
-	utils.Info(fmt.Sprintf("url:%s,result:%s", url, string(body)))
+	slog.Info(fmt.Sprintf("url:%s,result:%s", url, string(body)))
 	return body, nil
 }
 
 func doGet(url string) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return nil, err
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return nil, err
 	}
-	utils.Info(fmt.Sprintf("url:%s,result:%s", url, string(body)))
+	slog.Info(fmt.Sprintf("url:%s,result:%s", url, string(body)))
 	return body, nil
 }

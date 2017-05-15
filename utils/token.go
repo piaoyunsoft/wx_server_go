@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/astaxie/beego/logs"
+	"github.com/ddliao/go-lib/slog"
 	"github.com/dgrijalva/jwt-go"
 )
 
@@ -32,7 +32,7 @@ func ParseToken(tokenString string) (bool, string, string) {
 	})
 
 	if err != nil {
-		logs.Error(err.Error())
+		slog.Error(err)
 		return false, "", ""
 	}
 
@@ -56,7 +56,7 @@ func ParseToken(tokenString string) (bool, string, string) {
 		//		return true, int64(value)
 	} else {
 		if err != nil {
-			fmt.Println(err.Error())
+			slog.Error(err)
 		}
 		return false, "", ""
 	}

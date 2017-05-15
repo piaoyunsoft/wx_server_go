@@ -4,11 +4,10 @@ import (
 	"errors"
 	"time"
 
-	"wx_server_go/utils"
-
 	"encoding/json"
 
 	"github.com/astaxie/beego"
+	"github.com/ddliao/go-lib/slog"
 	"github.com/ddliao/go-lib/tool"
 	"github.com/go-xorm/xorm"
 )
@@ -164,7 +163,7 @@ func (this *ReqWxsubscribe) UpdateById() error {
 	item := Wxsubscribe(*this)
 	item.Changedate = time.Now()
 	_, err := x.Omit("wxSubscribeTime", "wxUnsubscribeTime", "aduitDate", "createDate", "BindDate").ID(item.Uid).Update(item)
-	utils.Error(err)
+	slog.Error(err)
 	return err
 }
 
@@ -193,7 +192,7 @@ type UpdateOpenIDModel struct {
 func (this *SeaWxsubscribe) BindCardByUID() (string, error) {
 	item := new(Wxsubscribe)
 	if err := this.getOne(this.where, item); err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return "", err
 	}
 
@@ -202,12 +201,12 @@ func (this *SeaWxsubscribe) BindCardByUID() (string, error) {
 	url := serverAddress + "wxopenapi/CheckMbrID?mbrID=" + item.Mbrid
 	body, err := doGet(url)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return "", err
 	}
 	if string(body) != "success" {
 		err = errors.New("会员卡号无效或已被绑定")
-		utils.Error(err)
+		slog.Error(err)
 		return "会员卡号无效或已被绑定", nil
 	}
 	//更新商场库会员openid
@@ -217,12 +216,12 @@ func (this *SeaWxsubscribe) BindCardByUID() (string, error) {
 	uptOpenID.OpenID = item.Wxopenid
 	_, err = doPost(url, uptOpenID)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return "", err
 	}
 	if string(body) != "success" {
 		err = errors.New("同步商场数据失败")
-		utils.Error(err)
+		slog.Error(err)
 		return "同步商场数据失败", nil
 	}
 
@@ -233,7 +232,7 @@ func (this *SeaWxsubscribe) BindCardByUID() (string, error) {
 	uptItem.Binddate = time.Now()
 	_, err = x.Omit("wxSubscribeTime", "wxUnsubscribeTime", "aduitDate", "createDate").ID(this.Uid).Update(uptItem)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return "", err
 	}
 
@@ -257,7 +256,7 @@ func (this *SeaWxsubscribe) BindCardByUID() (string, error) {
 	url = serverAddress + "wxopenapi/SendTplMsg"
 	_, err = doPost(url, msg)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return "", err
 	}
 	return "success", nil

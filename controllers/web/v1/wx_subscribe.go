@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"pt_server/utils"
 	"wx_server_go/constants"
 	"wx_server_go/controllers/api"
 
@@ -13,6 +12,7 @@ import (
 	"wx_server_go/models"
 
 	"github.com/astaxie/beego"
+	"github.com/ddliao/go-lib/slog"
 )
 
 type WxSubscribeController struct {
@@ -89,7 +89,7 @@ func (this *WxSubscribeController) CheckMbrId() {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		this.Data["json"] = v1.ResData(constants.Success, "fail")
 		return
 	}
@@ -97,11 +97,11 @@ func (this *WxSubscribeController) CheckMbrId() {
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		this.Data["json"] = v1.ResData(constants.Success, "fail")
 		return
 	}
-	utils.Info(fmt.Sprintf("url:%s rs:%s", url, string(body)))
+	slog.Info(fmt.Sprintf("url:%s rs:%s", url, string(body)))
 	if string(body) != "success" {
 		this.Data["json"] = v1.ResData(constants.Success, "fail")
 	} else {

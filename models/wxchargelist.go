@@ -2,10 +2,10 @@ package models
 
 import (
 	"errors"
-	"wx_server_go/utils"
 
 	"fmt"
 
+	"github.com/ddliao/go-lib/slog"
 	"github.com/ddliao/go-lib/tool"
 	"github.com/go-xorm/xorm"
 )
@@ -102,12 +102,12 @@ func (this *SeaWxchargelist) CheckChargeName() error {
 		count, err = x.Where("name=? and comID=?", this.Name, this.Comid).Count(item)
 	}
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	}
 	if count > 0 {
 		err = errors.New("exist data")
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	}
 	return nil
@@ -123,12 +123,12 @@ func (this *SeaWxchargelist) CheckChargeAmt() error {
 		count, err = x.Where("payAmt=? and comID=? and vipclsid=?", this.Payamt, this.Comid, this.Vipclsid).Count(item)
 	}
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	}
 	if count > 0 {
 		err = errors.New("exist data")
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	}
 	return nil
@@ -139,7 +139,7 @@ func (this *ReqWxchargelist) Insert() error {
 	item.Id = tool.NewStrID()
 	item.Getrealamt = item.Payamt
 	_, err := x.Insert(item)
-	utils.Error(err)
+	slog.Error(err)
 	return err
 }
 
@@ -148,14 +148,14 @@ func (this *ReqWxchargelist) UpdateById() error {
 	fmt.Println(fmt.Sprintf("%+v", item))
 	item.Getrealamt = item.Payamt
 	_, err := x.ID(item.Id).Update(item)
-	utils.Error(err)
+	slog.Error(err)
 	return err
 }
 
 func (this *ReqWxchargelist) DeleteById() error {
 	item := Wxchargelist(*this)
 	_, err := x.Id(item.Id).Delete(new(Wxchargelist))
-	utils.Error(err)
+	slog.Error(err)
 	return err
 }
 

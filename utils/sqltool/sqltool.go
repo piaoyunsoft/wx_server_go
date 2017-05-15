@@ -1,13 +1,12 @@
 package sqltool
 
 import (
-	"wx_server_go/utils"
-
 	"strings"
 
 	"time"
 
 	"github.com/astaxie/beego/orm"
+	"github.com/ddliao/go-lib/slog"
 )
 
 type IdStruct struct {
@@ -28,7 +27,7 @@ func PageQuery_QS(tableName interface{}, fun func(orm.QuerySeter) orm.QuerySeter
 			return total, nil
 		}
 	}
-	utils.Error(err)
+	slog.Error(err)
 	return 0, err
 }
 
@@ -43,7 +42,7 @@ func PageQuery_QB(qb orm.QueryBuilder, result interface{}, page int, limit int) 
 			return total, nil
 		}
 	}
-	utils.Error(err)
+	slog.Error(err)
 	return 0, err
 }
 
@@ -64,7 +63,7 @@ func Update(item interface{}, cols ...string) error {
 	o := orm.NewOrm()
 	_, err := o.Update(item, cols...)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 	}
 	return err
 }
@@ -73,7 +72,7 @@ func Delete(item interface{}) error {
 	o := orm.NewOrm()
 	_, err := o.Delete(item)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 	}
 	return err
 }
@@ -83,7 +82,7 @@ func Create(item interface{}) error {
 	if _, err := o.Insert(item); err == nil {
 		return nil
 	} else {
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	}
 }
@@ -93,7 +92,7 @@ func NewId(tablename string) (int, error) {
 	var id IdStruct
 	err := o.Raw("call pro_sequence(?)", tablename).QueryRow(&id)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 	}
 	return id.Newid, err
 }

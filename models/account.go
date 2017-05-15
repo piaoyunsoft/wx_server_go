@@ -11,6 +11,7 @@ import (
 
 	"fmt"
 
+	"github.com/ddliao/go-lib/slog"
 	"github.com/go-xorm/xorm"
 )
 
@@ -138,7 +139,7 @@ func (this *SeaAccount) CheckAccount() error {
 			count, err = x.Where("AccountName=? and Unicode<>?", this.Accountname_Full, this.Unicode).Count(item)
 		} else {
 			err = errors.New("invalid params")
-			utils.Error(err)
+			slog.Error(err)
 			return err
 		}
 	} else {
@@ -148,17 +149,17 @@ func (this *SeaAccount) CheckAccount() error {
 			count, err = x.Where("AccountName=?", this.Accountname_Full).Count(item)
 		} else {
 			err = errors.New("invalid params")
-			utils.Error(err)
+			slog.Error(err)
 			return err
 		}
 	}
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	}
 	if count > 0 {
 		err = errors.New("exist data")
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	}
 	return nil
@@ -170,7 +171,7 @@ func (this *ReqAccount) Insert() error {
 		item.Unicode = utils.Leftpad(strconv.Itoa(id), 12, 48)
 		item.Password = "000000"
 		_, err := x.Insert(item)
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	} else {
 		return err
@@ -180,14 +181,14 @@ func (this *ReqAccount) Insert() error {
 func (this *ReqAccount) UpdateById() error {
 	item := Account(*this)
 	_, err := x.Omit("vldDtm").ID(item.Unicode).Update(item)
-	utils.Error(err)
+	slog.Error(err)
 	return err
 }
 
 func (this *ReqAccount) DeleteById() error {
 	item := Account(*this)
 	_, err := x.Id(item.Unicode).Delete(new(Account))
-	utils.Error(err)
+	slog.Error(err)
 	return err
 }
 
@@ -195,7 +196,7 @@ func (this *ReqAccount) ResetPwd() error {
 	item := Account(*this)
 	item.Password = "000000"
 	_, err := x.Omit("vldDtm").ID(item.Unicode).Update(item)
-	utils.Error(err)
+	slog.Error(err)
 	return err
 }
 
@@ -204,12 +205,12 @@ func (this *SeaAccount) ChangePwd() (string, error) {
 	item := new(Account)
 	count, err := x.Where("Unicode=? and Password=?", this.Unicode, this.Old_Pwd).Count(item)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return "", err
 	}
 	if count <= 0 {
 		err = errors.New("invalid user")
-		utils.Error(err)
+		slog.Error(err)
 		return "原密码错误", nil
 	}
 	req := new(ReqAccount)

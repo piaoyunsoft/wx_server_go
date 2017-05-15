@@ -1,9 +1,8 @@
 package common
 
 import (
-	"wx_server_go/utils"
-
 	"github.com/astaxie/beego"
+	"github.com/ddliao/go-lib/slog"
 )
 
 type FileController struct {
@@ -20,7 +19,7 @@ func (this *FileController) UploadFile() {
 	if err == nil {
 		//		f.Close()
 	} else {
-		utils.Error(err.Error())
+		slog.Error(err.Error())
 		this.Data["json"] = map[string]interface{}{"isSuc": false}
 		this.ServeJSON()
 		return
@@ -30,7 +29,7 @@ func (this *FileController) UploadFile() {
 	//	f.Close()
 	err = this.SaveToFile("file", fullPath)
 	if err != nil {
-		utils.Error(err.Error())
+		slog.Error(err.Error())
 		this.Data["json"] = map[string]interface{}{"isSuc": false}
 		this.ServeJSON()
 		return

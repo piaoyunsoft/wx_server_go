@@ -4,13 +4,13 @@ import (
 	"time"
 
 	"errors"
-	"pt_server/utils"
 
 	"wx_server_go/utils/sqltool"
 
 	"fmt"
 
 	"github.com/astaxie/beego"
+	"github.com/ddliao/go-lib/slog"
 	"github.com/go-xorm/xorm"
 )
 
@@ -148,12 +148,12 @@ func (this *SeaVipgiftlist) CheckGiftName() error {
 		count, err = x.Where("giftName=?", this.Giftname).Count(item)
 	}
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	}
 	if count > 0 {
 		err = errors.New("exist data")
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	}
 	return nil
@@ -163,13 +163,13 @@ func (this *ReqVipgiftlist) Insert() error {
 	item := Vipgiftlist(*this)
 	id, err := sqltool.NewId("vipgiftlist")
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	} else {
 		item.Giftcode = fmt.Sprintf("g%07d", id)
 		item.Makedate = time.Now()
 		_, err := x.Insert(item)
-		utils.Error(err)
+		slog.Error(err)
 		return err
 	}
 }
@@ -178,13 +178,13 @@ func (this *ReqVipgiftlist) UpdateById() error {
 	item := Vipgiftlist(*this)
 	item.Auditdate = time.Now()
 	_, err := x.Omit("makeDate").ID(item.Giftcode).Update(item)
-	utils.Error(err)
+	slog.Error(err)
 	return err
 }
 
 func (this *ReqVipgiftlist) DeleteById() error {
 	item := Vipgiftlist(*this)
 	_, err := x.Id(item.Giftcode).Delete(new(Vipgiftlist))
-	utils.Error(err)
+	slog.Error(err)
 	return err
 }

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"pt_server/utils"
 
 	"github.com/astaxie/beego"
+	"github.com/ddliao/go-lib/slog"
 	"github.com/pquerna/ffjson/ffjson"
 )
 
@@ -61,24 +61,24 @@ func (this *SeaCoupon) GetCoupon() ([]Coupon, error) {
 	url := serverAddress + "wxopenapi/GetCoupons?title=" + this.Title + "&comID=" + this.ComID
 	resp, err := http.Get(url)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return nil, err
 	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return nil, err
 	}
 
 	rsModel := make([]Coupon, 0)
 	err = ffjson.Unmarshal(body, &rsModel)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return nil, err
 	}
-	utils.Info(fmt.Sprintf("url:%s rs:%+v", url, rsModel))
+	slog.Info(fmt.Sprintf("url:%s rs:%+v", url, rsModel))
 	return rsModel, nil
 }
 
@@ -88,23 +88,23 @@ func (this *SeaCouponItem) GetCouponItem() ([]CouponItem, error) {
 
 	resp, err := http.Get(url)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return nil, err
 	}
 
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return nil, err
 	}
 
 	rsModel := make([]CouponItem, 0)
 	err = ffjson.Unmarshal(body, &rsModel)
 	if err != nil {
-		utils.Error(err)
+		slog.Error(err)
 		return nil, err
 	}
-	utils.Info(fmt.Sprintf("url:%s rs:%+v", url, rsModel))
+	slog.Info(fmt.Sprintf("url:%s rs:%+v", url, rsModel))
 	return rsModel, nil
 }

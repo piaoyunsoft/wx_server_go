@@ -10,6 +10,7 @@ import (
 	"github.com/astaxie/beego/cache"
 	_ "github.com/astaxie/beego/cache/memcache"
 	_ "github.com/astaxie/beego/cache/redis"
+	"github.com/ddliao/go-lib/slog"
 )
 
 var cc cache.Cache
@@ -30,7 +31,7 @@ func initMemcache() {
 	cc, err = cache.NewCache("memcache", `{"conn":"`+beego.AppConfig.String("memcache_host")+`"}`)
 
 	if err != nil {
-		beego.Info(err)
+		slog.Error(err)
 	}
 }
 
@@ -46,9 +47,9 @@ func initRedis() {
 	cc, err = cache.NewCache("redis", `{"conn":"`+beego.AppConfig.String("redis_host")+`","password":"helloworld"}`)
 
 	if err != nil {
-		beego.Info(err)
+		slog.Error(err)
 	} else {
-		beego.Info("redis 连接成功")
+		slog.Trace("redis 连接成功")
 	}
 }
 

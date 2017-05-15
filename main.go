@@ -1,6 +1,8 @@
 package main
 
 import (
+	_ "github.com/ddliao/go-lib/slog"
+
 	_ "wx_server_go/docs"
 	_ "wx_server_go/initial"
 
@@ -9,10 +11,6 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/plugins/cors"
 )
-
-func init() {
-
-}
 
 func main() {
 	beego.BConfig.EnableGzip = true
