@@ -201,7 +201,7 @@ func doPost(url string, i interface{}) ([]byte, error) {
 		slog.Error(err)
 		return nil, err
 	}
-	slog.Info(fmt.Sprintf("url:%s,result:%s", url, string(body)))
+	slog.Info(fmt.Sprintf("url:%s,body:%+s, result:%s", url, string(str), string(body)))
 	return body, nil
 }
 

@@ -55,6 +55,7 @@ type ReqVipgiftexch struct {
 
 type SeaVipgiftexch struct {
 	SeaModel
+	Exchid     string `json:"exchID"`
 	Giftname   string `json:"giftName"`
 	Begin      string `json:"begin"`
 	End        string `json:"end"`
@@ -109,6 +110,9 @@ func (this *SeaVipgiftexch) where() *xorm.Session {
 	if this.Mailstatus != "" {
 		session.And("a.mailStatus = ?", this.Mailstatus)
 	}
+	if this.Exchid != "" {
+		session.And("a.exchID = ?", this.Exchid)
+	}
 	return session.
 		Join("LEFT", []string{"wxsubscribe", "b"}, "b.wxOpenId = a.wxOpenID and b.comID = a.comId").
 		Join("LEFT", []string{"dictitem", "c"}, "c.itemcode = a.getWay and c.dictcode = '002'").
@@ -129,6 +133,22 @@ func (this *ReqVipgiftexch) UpdateById() error {
 	item := Vipgiftexch(*this)
 	item.Changedate = time.Now()
 	_, err := x.Omit("createDate").ID(item.Exchid).Update(item)
-	slog.Error(err)
-	return err
+	if err != nil {
+		slog.Error(err)
+		return err
+	}
+	//快递状态为已寄出（02）时发送消息
+	if this.Mailstatus == "02" {
+		sea := new(SeaVipgiftexch)
+		sea.Exchid = item.Exchid
+		exch := new(VipgiftexchModel)
+		err = sea.getOne(sea.where, exch)
+		if err != nil {
+			slog.Error(err)
+			return nil
+		}
+		send := NewSendMsgModel(exch.Mbrid, exch.Comid)
+		send.SendTplMsg_OPENTM405840986(exch.Dlvcontent, exch.Dlvbllno, exch.Giftname)
+	}
+	return nil
 }

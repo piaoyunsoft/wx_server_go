@@ -16,20 +16,23 @@ type SeaCoupon struct {
 }
 
 type Coupon struct {
-	ID             string
-	ComID          string  `json:"comID"`
-	CouponType     string  `json:"couponType"`
-	GetWay         string  `json:"getWay"`
-	LogoUrl        string  `json:"logo_url"`
-	Title          string  `json:"title"`
-	Content        string  `json:"content"`
-	Notice         string  `json:"notice"`
-	UseScope       string  `json:"useScope"`
-	DefCouponValue float32 `json:"defCouponValue"`
-	Qty            int     `json:"qty"`
-	TimeLimitWay   string  `json:"timeLimitWay"`
-	TimeLimitValue string  `json:"timeLimitValue"`
-	Status         string  `json:"status"`
+	ID              string
+	ComID           string  `json:"comID"`
+	CouponType      string  `json:"couponType"`
+	GetWay          string  `json:"getWay"`
+	LogoUrl         string  `json:"logo_url"`
+	Title           string  `json:"title"`
+	Content         string  `json:"content"`
+	Notice          string  `json:"notice"`
+	UseScope        string  `json:"useScope"`
+	DefCouponValue  float32 `json:"defCouponValue"`
+	Qty             int     `json:"qty"`
+	TimeLimitWay    string  `json:"timeLimitWay"`
+	TimeLimitValue  string  `json:"timeLimitValue"`
+	Status          string  `json:"status"`
+	AlreadyGetCount int     `json:"AlreadyGetCount"`
+	AlreadyUseCount int     `json:"AlreadyUseCount"`
+	AlreadyGetAmt   float64 `json:"AlreadyGetAmt"`
 }
 
 type CouponModal struct {
