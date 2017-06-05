@@ -8,7 +8,7 @@ import (
 	"wx_server_go/utils/sqltool"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/ddliao/go-lib/tool"
+	"github.com/jdongdong/go-lib/tool"
 )
 
 type Statistics struct {

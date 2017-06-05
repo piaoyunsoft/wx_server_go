@@ -12,7 +12,7 @@ import (
 	"wx_server_go/models"
 
 	"github.com/astaxie/beego"
-	"github.com/ddliao/go-lib/slog"
+	"github.com/jdongdong/go-lib/slog"
 )
 
 type WxSubscribeController struct {

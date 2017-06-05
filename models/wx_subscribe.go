@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
-	"github.com/ddliao/go-lib/slog"
 	"github.com/go-xorm/xorm"
+	"github.com/jdongdong/go-lib/slog"
 )
 
 type Wxsubscribe struct {

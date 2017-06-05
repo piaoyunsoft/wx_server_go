@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ddliao/go-lib/slog"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/jdongdong/go-lib/slog"
 )
 
 var SecretKey string = "hello world"

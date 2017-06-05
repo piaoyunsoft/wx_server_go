@@ -12,10 +12,10 @@ import (
 	"strings"
 
 	"github.com/astaxie/beego"
-	"github.com/ddliao/go-lib/slog"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
+	"github.com/jdongdong/go-lib/slog"
 )
 
 var (

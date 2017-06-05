@@ -7,7 +7,7 @@ import (
 
 	"wx_server_go/models"
 
-	"github.com/ddliao/go-lib/slog"
+	"github.com/jdongdong/go-lib/slog"
 )
 
 type AccountController struct {

@@ -9,8 +9,8 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
-	"github.com/ddliao/go-lib/slog"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jdongdong/go-lib/slog"
 )
 
 func InitSql() {

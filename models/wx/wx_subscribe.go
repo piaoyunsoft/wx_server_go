@@ -17,7 +17,6 @@ package wx
 //
 //	"github.com/astaxie/beego"
 //	"github.com/astaxie/beego/orm"
-//	"github.com/ddliao/go-lib/tool"
 //)
 //
 //type Wxsubscribe struct {

@@ -2,7 +2,7 @@ package common
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/ddliao/go-lib/slog"
+	"github.com/jdongdong/go-lib/slog"
 )
 
 type FileController struct {

@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/astaxie/beego"
-	"github.com/ddliao/go-lib/slog"
+	"github.com/jdongdong/go-lib/slog"
 	"github.com/pquerna/ffjson/ffjson"
 )
 

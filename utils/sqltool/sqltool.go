@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/astaxie/beego/orm"
-	"github.com/ddliao/go-lib/slog"
+	"github.com/jdongdong/go-lib/slog"
 )
 
 type IdStruct struct {

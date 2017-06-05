@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "github.com/ddliao/go-lib/slog"
+	_ "github.com/jdongdong/go-lib/slog"
 
 	_ "wx_server_go/docs"
 	_ "wx_server_go/initial"
@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+
 	beego.BConfig.EnableGzip = true
 	if beego.BConfig.RunMode == "dev" {
 		beego.BConfig.WebConfig.DirectoryIndex = true

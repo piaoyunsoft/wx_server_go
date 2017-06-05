@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/astaxie/beego"
-	"github.com/ddliao/go-lib/slog"
-	"github.com/ddliao/go-lib/tool"
+	"github.com/jdongdong/go-lib/slog"
+	"github.com/jdongdong/go-lib/tool"
 )
 
 type SendMsgModel struct {

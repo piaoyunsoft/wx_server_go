@@ -5,9 +5,9 @@ import (
 
 	"fmt"
 
-	"github.com/ddliao/go-lib/slog"
-	"github.com/ddliao/go-lib/tool"
 	"github.com/go-xorm/xorm"
+	"github.com/jdongdong/go-lib/slog"
+	"github.com/jdongdong/go-lib/tool"
 )
 
 type Wxchargelist struct {
@@ -166,7 +166,6 @@ func (this *ReqWxchargelist) DeleteById() error {
 //	"wx_server_go/utils/sqltool"
 //
 //	"github.com/astaxie/beego/orm"
-//	"github.com/ddliao/go-lib/tool"
 //	"github.com/zheng-ji/goSnowFlake"
 //)
 //
