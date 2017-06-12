@@ -33,6 +33,7 @@ type Coupon struct {
 	AlreadyGetCount int     `json:"AlreadyGetCount"`
 	AlreadyUseCount int     `json:"AlreadyUseCount"`
 	AlreadyGetAmt   float64 `json:"AlreadyGetAmt"`
+	IsExpired       bool    `json:"IsExpired"`
 }
 
 type CouponModal struct {
@@ -57,6 +58,7 @@ type CouponItem struct {
 	UsedLinkTb string  `json:"usedLinkTb"`
 	UsedLinkPK string  `json:"usedLinkPK"`
 	MbrName    string  `json:"mbrName"`
+	IsExpired  bool    `json:"IsExpired"`
 }
 
 func (this *SeaCoupon) GetCoupon() ([]Coupon, error) {
