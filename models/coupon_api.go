@@ -76,7 +76,7 @@ func (this *SeaCoupon) GetCoupon() ([]Coupon, error) {
 		slog.Error(err)
 		return nil, err
 	}
-
+	slog.Trace("get coupong rs:", string(body))
 	rsModel := make([]Coupon, 0)
 	err = ffjson.Unmarshal(body, &rsModel)
 	if err != nil {
@@ -103,7 +103,7 @@ func (this *SeaCouponItem) GetCouponItem() ([]CouponItem, error) {
 		slog.Error(err)
 		return nil, err
 	}
-
+	slog.Trace("get coupong item rs:", string(body))
 	rsModel := make([]CouponItem, 0)
 	err = ffjson.Unmarshal(body, &rsModel)
 	if err != nil {
