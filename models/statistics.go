@@ -140,6 +140,15 @@ func total_statistics(o orm.Ormer) (int64, int64, int64, int64, float64, float64
 	timeEnd := sqltool.TimeToStr(time.Now(), "yyyy-MM-dd") + " 23:59:59"
 
 	var maps []orm.Params
+	//sql:=`select * from (select count(1) as total_subscribe from wxsubscribe where (status='na' or status='aa') and subscribed='y') as aa,
+	//(select count(1) as today_subscribe from wxsubscribe where (status='na' or status='aa') and subscribed='y' and wxSubscribeTime >=? and wxSubscribeTime <=?) as bb,
+	//(select count(1) as total_bind from wxsubscribe where status='aa' and subscribed='y') as cc,
+	//(select count(1) as today_bind from wxsubscribe where status='aa' and subscribed='y' and BindDate >=? and BindDate <=?) as dd,
+	//(select sum(amt) as total_amt from wxchargeodr where status = 'aa') as ee,
+	//(select sum(amt) as today_amt from wxchargeodr where status = 'aa' and payTime >=? and payTime <=?) as ff,
+	//(select count(1) as total_gift from vipgiftexch where status='aa') as gg,
+	//(select count(1) as today_gift from vipgiftexch where status='aa' and createDate >=? and createDate <=?) as hh`
+
 	_, err := o.Raw("select * from (select count(1) as total_subscribe from wxsubscribe where (status='na' or status='aa') and subscribed='y') as aa,(select count(1) as today_subscribe from wxsubscribe where (status='na' or status='aa') and subscribed='y' and wxSubscribeTime >=? and wxSubscribeTime <=?) as bb,(select count(1) as total_bind from wxsubscribe where status='aa' and subscribed='y') as cc,(select count(1) as today_bind from wxsubscribe where status='aa' and subscribed='y' and BindDate >=? and BindDate <=?) as dd,(select sum(amt) as total_amt from wxchargeodr where status = 'aa') as ee,(select sum(amt) as today_amt from wxchargeodr where status = 'aa' and payTime >=? and payTime <=?) as ff,(select count(1) as total_gift from vipgiftexch where status='aa') as gg,(select count(1) as today_gift from vipgiftexch where status='aa' and createDate >=? and createDate <=?) as hh", timeBegin, timeEnd, timeBegin, timeEnd, timeBegin, timeEnd, timeBegin, timeEnd).Values(&maps)
 	if err != nil {
 		return 0, 0, 0, 0, 0, 0, 0, 0, err

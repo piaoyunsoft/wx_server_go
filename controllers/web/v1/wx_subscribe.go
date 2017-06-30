@@ -28,6 +28,7 @@ func (this *WxSubscribeController) GetAll() {
 	req.PageSize = this.ToIntEx("size", 10)
 	req.PageIndex = this.ToIntEx("page", 1)
 	req.Wxnickname = this.GetString("wxNickName")
+	req.SeaMbrid = this.GetString("seaMbrId")
 	req.Begin = this.GetString("begin")
 	req.End = this.GetString("end")
 
@@ -73,6 +74,12 @@ func (this *WxSubscribeController) BindCardByUID() {
 	req := new(models.SeaWxsubscribe)
 	json.Unmarshal(this.Ctx.Input.RequestBody, &req)
 
+	if req.Uid == "" {
+		this.Data["json"] = ResCode(constants.InvalidParams)
+		this.ServeJSON()
+		return
+	}
+
 	if rs, err := req.BindCardByUID(); err == nil {
 		this.Data["json"] = v1.ResData(constants.Success, rs)
 	} else {
@@ -106,6 +113,25 @@ func (this *WxSubscribeController) CheckMbrId() {
 		this.Data["json"] = v1.ResData(constants.Success, "fail")
 	} else {
 		this.Data["json"] = v1.ResData(constants.Success, "success")
+	}
+	this.ServeJSON()
+}
+
+// @router /unbind [put]
+func (this *WxSubscribeController) UnBindCardByUID() {
+	req := new(models.SeaWxsubscribe)
+	json.Unmarshal(this.Ctx.Input.RequestBody, &req)
+
+	if req.Uid == "" {
+		this.Data["json"] = ResCode(constants.InvalidParams)
+		this.ServeJSON()
+		return
+	}
+
+	if err := req.UnBindCardByUID(); err == nil {
+		this.Data["json"] = v1.ResCode(constants.Success)
+	} else {
+		this.Data["json"] = v1.ResCode(constants.DBError)
 	}
 	this.ServeJSON()
 }

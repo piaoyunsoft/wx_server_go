@@ -87,6 +87,7 @@ type SeaWxsubscribe struct {
 	End        string `json:"end"`
 	Status     string `json:"status"`
 	Key        string `json:"key"`
+	SeaMbrid   string `json:"seaMbrId"`
 }
 
 type WxsubscribeModel struct {
@@ -137,6 +138,9 @@ func (this *SeaWxsubscribe) where() *xorm.Session {
 	}
 	if this.Status != "" {
 		session.And("a.status = ?", this.Status)
+	}
+	if this.SeaMbrid != "" {
+		session.And("a.mbrId like ?", toLike(this.SeaMbrid))
 	}
 	if this.Key != "" {
 		session.And("a.mbrName like ? or a.mobile like ?", toLike(this.Key), toLike(this.Key))
@@ -223,4 +227,14 @@ func (this *SeaWxsubscribe) BindCardByUID() (string, error) {
 	}
 
 	return "success", nil
+}
+
+func (this *SeaWxsubscribe) UnBindCardByUID() error {
+	item := new(Wxsubscribe)
+	item.Uid = this.Uid
+	item.Changedate = time.Now()
+	item.Status = "na"
+	_, err := x.Cols("BindDate", "BindWay", "mbrId", "status", "mbrType", "changeDate", "vipclsid").ID(item.Uid).Update(item)
+	slog.Error(err)
+	return err
 }
