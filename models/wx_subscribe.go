@@ -88,6 +88,8 @@ type SeaWxsubscribe struct {
 	Status     string `json:"status"`
 	Key        string `json:"key"`
 	SeaMbrid   string `json:"seaMbrId"`
+	BindBegin  string
+	BindEnd    string
 }
 
 type WxsubscribeModel struct {
@@ -135,6 +137,12 @@ func (this *SeaWxsubscribe) where() *xorm.Session {
 	}
 	if this.End != "" {
 		session.And("a.WxSubscribeTime <= ?", this.End)
+	}
+	if this.BindBegin != "" {
+		session.And("a.BindDate >= ?", this.BindBegin)
+	}
+	if this.BindEnd != "" {
+		session.And("a.BindDate <= ?", this.BindEnd)
 	}
 	if this.Status != "" {
 		session.And("a.status = ?", this.Status)

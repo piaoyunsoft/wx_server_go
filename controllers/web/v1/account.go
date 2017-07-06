@@ -84,7 +84,11 @@ func (this *AccountController) Login() {
 			this.Data["json"] = ResCode(constants.LoginFail)
 		}
 	} else {
-		this.Data["json"] = ResCode(constants.DBError)
+		if err == models.ErrorNoData {
+			this.Data["json"] = ResCode(constants.LoginFail)
+		} else {
+			this.Data["json"] = ResCode(constants.DBError)
+		}
 	}
 	this.ServeJSON()
 }

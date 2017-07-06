@@ -31,6 +31,8 @@ func (this *WxSubscribeController) GetAll() {
 	req.SeaMbrid = this.GetString("seaMbrId")
 	req.Begin = this.GetString("begin")
 	req.End = this.GetString("end")
+	req.BindBegin = this.GetString("BindBegin")
+	req.BindEnd = this.GetString("BindEnd")
 
 	if rs, total, err := req.GetPaging(); err == nil {
 		this.Data["json"] = ResData(constants.Success, PageData{Data: rs, Total: total})

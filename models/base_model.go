@@ -23,6 +23,7 @@ var (
 	DbCfg struct {
 		Host, Port, User, Pwd, Db string
 	}
+	ErrorNoData = errors.New("has no data")
 )
 
 type Model struct {
@@ -165,7 +166,7 @@ func (this *SeaModel) getOne(session getSession, item interface{}) error {
 	if err != nil {
 		return err
 	} else if !has {
-		err = errors.New("has no data")
+		err = ErrorNoData
 		slog.Error(err)
 		return err
 	} else {
@@ -179,7 +180,7 @@ func (this *SeaModel) getOneSel(session getSession, sel string, item interface{}
 		slog.Error(err)
 		return err
 	} else if !has {
-		err = errors.New("has no data")
+		err = ErrorNoData
 		slog.Error(err)
 		return err
 	} else {
