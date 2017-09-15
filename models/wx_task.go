@@ -80,7 +80,7 @@ type PlatcuswxtaskModel struct {
 func (this *SeaPlatcuswxtask) where() *xorm.Session {
 	session := x.NewSession().Table("platcuswxtask").Alias("a")
 	if this.NickName != "" {
-		session.And("b.wxNickName like ? or a.ToCusMbrName like ?", toLike(this.NickName), toLike(this.NickName))
+		session.And("(b.wxNickName like ? or a.ToCusMbrName like ?)", toLike(this.NickName), toLike(this.NickName))
 	}
 	if this.Begin != "" {
 		session.And("a.sendDtm >= ?", this.Begin)
@@ -94,13 +94,13 @@ func (this *SeaPlatcuswxtask) where() *xorm.Session {
 	return session.
 		Join("LEFT", []string{"wxsubscribe", "b"}, "b.wxOpenId = a.ToWxOpenId").
 		Join("LEFT", []string{"wxtplmsgtpllib", "c"}, "c.tplCode = a.tplCode").
-		Join("LEFT", []string{"platcus", "d"}, "d.cusID = a.FromCusID").
+		//Join("LEFT", []string{"platcus", "d"}, "d.cusID = a.FromCusID").
 		Desc("a.createDtm")
 }
 
 func (this *SeaPlatcuswxtask) GetPaging() ([]PlatcuswxtaskModel, int64, error) {
 	items := make([]PlatcuswxtaskModel, 0, this.PageSize)
-	if total, err := this.getPagingSel(this.where, "a.*, b.wxNickName as nick_name, c.title as tpl_name, d.cusName as cus_name", new(PlatcuswxtaskModel), &items); err != nil {
+	if total, err := this.getPagingSel(this.where, "a.*, b.wxNickName as nick_name, c.title as tpl_name", new(PlatcuswxtaskModel), &items); err != nil {
 		return nil, 0, err
 	} else {
 		return items, total, nil
